@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-@Entity(name = "users")
+@Entity(name = "user")
 @Data
 public class UserEntity implements Serializable {
     public static final long serialVersionUID = 2828520025360413233L;
@@ -43,6 +43,6 @@ public class UserEntity implements Serializable {
     @Column(nullable = false, length = 50)
     private String role;
 
-    @Column(nullable = false)
-    private Boolean activated;
+    @Column(nullable = false, name = "active")
+    private Boolean activated = true;
 }

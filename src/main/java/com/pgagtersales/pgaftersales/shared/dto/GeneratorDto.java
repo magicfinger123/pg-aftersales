@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class GeneratorDto {
-
     public static final long serialVersionUID = 2828520025360413233L;
+    private int id;
     private int client_id;
     private String location;
-    private String engine_serial;
+    private String engineSerial;
     private String alternator_serial;
     private String alternator_type;
     private String engine_model;

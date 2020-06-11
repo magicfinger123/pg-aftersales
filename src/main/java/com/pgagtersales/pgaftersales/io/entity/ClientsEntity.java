@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "clients")
 @Data
 public class ClientsEntity {
     public static final long serialVersionUID = 6411563565645445491L;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false, length = 50, unique = true)
@@ -33,21 +30,21 @@ public class ClientsEntity {
    private String title;
 
     @Column(nullable = false, length = 50)
-   private String phone;
+    private String phone;
 
     @Column(nullable = false)
-   private String email;
+    private String email;
 
     @Column(nullable = false, name = "company_name")
-   private String company;
+    private String company;
 
     @Column(nullable = false)
     @Type(type = "text")
-   private String address;
+    private String address;
 
     @Column(nullable = false, length = 50)
-   private String cluster;
+    private String cluster;
 
     @Column(nullable = false)
-   private int visible;
+    private int visible;
 }

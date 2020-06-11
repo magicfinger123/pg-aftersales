@@ -29,12 +29,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
-
     @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         //return super.attemptAuthentication(request, response);
-
             UserLoginRequest cred = new ObjectMapper()
                     .readValue(request.getInputStream(), UserLoginRequest.class);
             return authenticationManager.
@@ -43,9 +41,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                     cred.getPassword(),
                     new ArrayList<>()
             ));
-
     }
-
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         //super.successfulAuthentication(request, response, chain, authResult);
@@ -58,6 +54,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
         UserDto userDto = userService.getUser(username);
         response.addHeader(SecurityConstant.HEADER_STRING,SecurityConstant.TOKEN_PREFIX+token);
+        System.out.println(""+SecurityConstant.HEADER_STRING +" "+SecurityConstant.TOKEN_PREFIX+token);
         response.addHeader("UserID", userDto.getUserId());
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClientRepository extends PagingAndSortingRepository<ClientsEntity,Long> {
+public interface ClientRepository extends PagingAndSortingRepository<ClientsEntity,Integer> {
 
     @Query(value = "SELECT * FROM `clients` WHERE (CONVERT(`id` USING utf8) LIKE %?1% OR " +
             "CONVERT(`username` USING utf8) LIKE %?1% OR CONVERT(`password` USING utf8) LIKE %?1% OR " +
@@ -20,4 +20,5 @@ public interface ClientRepository extends PagingAndSortingRepository<ClientsEnti
             " CONVERT(`visible` USING utf8) LIKE %?1% )\n#Pageable\n", nativeQuery = true)
     Page<ClientsEntity> searchClient(String alias, Pageable pageable);
     ClientsEntity findByUsername(String username);
+    ClientsEntity findById(int id);
 }

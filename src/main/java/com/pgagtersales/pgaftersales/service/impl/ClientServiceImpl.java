@@ -9,6 +9,7 @@ package com.pgagtersales.pgaftersales.service.impl;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.HttpResponses;
+import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.entity.ClientsEntity;
 import com.pgagtersales.pgaftersales.io.entity.GeneratorEntity;
 import com.pgagtersales.pgaftersales.model.response.*;
@@ -18,14 +19,21 @@ import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
 import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +45,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private ResponseBuilder responseBuilder;
-
 
     @Override
     public ApiResponse getClients(int page, int size) {
@@ -61,6 +68,7 @@ public class ClientServiceImpl implements ClientService {
             }
             ApiResponse getClients = responseBuilder.successfullResponse();
             getClients.responseEntity = ResponseEntity.ok(returnedValue);
+
             return getClients;
         }
     }
@@ -68,7 +76,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ApiResponse searchClients(String alias, int page, int size) {
         List<ClientDto> returnValue = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<ClientsEntity> clientsPage = clientRepository.searchClient(alias, pageable);
         if (clientsPage == null || clientsPage.isEmpty()) {
             ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
@@ -93,24 +101,104 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResponse getClientByUsername(String username) {
-       ClientsEntity clientsEntity = clientRepository.findByUsername(username);
-       if (clientsEntity == null ){
-           ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-           ErrorMessage errorMessage = ErrorMessage.builder()
-                   .developerMessage(username+" not found")
-                   .userMessage(username+" not found")
-                   .build();
-           failedResponse.responseEntity = ResponseEntity.status(failedResponse.getStatusCode()).body(errorMessage);
-           return failedResponse;
+        ClientsEntity clientsEntity = clientRepository.findByUsername(username);
+        if (clientsEntity == null) {
+            ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
+            ErrorMessage errorMessage = ErrorMessage.builder()
+                    .developerMessage(username + " not found")
+                    .userMessage(username + " not found")
+                    .build();
+            failedResponse.responseEntity = ResponseEntity.status(failedResponse.getStatusCode()).body(errorMessage);
+            return failedResponse;
 
-       }
-       else{
-           ClientDto clientDto = new ClientDto();
-           BeanUtils.copyProperties(clientsEntity,clientDto);
-           ApiResponse successresponse = responseBuilder.successfullResponse();
-           successresponse.responseEntity = ResponseEntity.ok(clientDto);
-           return  successresponse;
+        } else {
+            ClientDto clientDto = new ClientDto();
+            BeanUtils.copyProperties(clientsEntity, clientDto);
+            ApiResponse successresponse = responseBuilder.successfullResponse();
+            successresponse.responseEntity = ResponseEntity.ok(clientDto);
+            return successresponse;
 
-       }
+        }
     }
+
+    @Override
+    public ApiResponse getClientById(int clientId) {
+        ClientsEntity clientsEntity = clientRepository.findById(clientId);
+        if (clientsEntity == null) {
+            ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
+            ErrorMessage errorMessage = ErrorMessage.builder()
+                    .developerMessage(clientId + " not found")
+                    .userMessage(clientId + " not found")
+                    .build();
+            failedResponse.responseEntity = ResponseEntity.status(failedResponse.getStatusCode()).body(errorMessage);
+            return failedResponse;
+
+        } else {
+            ClientDto clientDto = new ClientDto();
+            BeanUtils.copyProperties(clientsEntity, clientDto);
+            ApiResponse successresponse = responseBuilder.successfullResponse();
+            successresponse.responseEntity = ResponseEntity.ok(clientDto);
+            return successresponse;
+
+        }
+    }
+
+    @Override
+    public ApiResponse addClient(com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto) {
+        ClientDto returnValue = new ClientDto();
+        ClientsEntity client = clientRepository.findByUsername(clientDto.getUsername());
+        if (client != null) {
+            throw new UserServiceException("client already exist", "client already exist");
+        }
+        ClientsEntity clientsEntity = new ClientsEntity();
+        BeanUtils.copyProperties(clientDto, clientsEntity);
+        ClientsEntity saveUser = clientRepository.save(clientsEntity);
+        BeanUtils.copyProperties(saveUser, returnValue);
+        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(returnValue);
+        return apiResponse;
+    }
+
+    @Override
+    public ApiResponse updateClient(int id, com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto) {
+        ClientDto returnValue = new ClientDto();
+        ClientsEntity client = clientRepository.findById(id);
+        if (client == null) {
+            ErrorMessage errorMessage = ErrorMessage.builder()
+                    .userMessage("Error Occured")
+                    .developerMessage("Id not found")
+                    .build();
+            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
+            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
+            return apiResponse;
+        } else {
+            BeanUtils.copyProperties(clientDto, client);
+            ClientsEntity saveUser = clientRepository.save(client);
+            BeanUtils.copyProperties(saveUser, returnValue);
+            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            apiResponse.responseEntity = ResponseEntity.ok(returnValue);
+            return apiResponse;
+        }
+    }
+    @Override
+    public ApiResponse deleteClient(int id) {
+        ClientDto returnValue = new ClientDto();
+        ClientsEntity client = clientRepository.findById(id);
+        if (client == null) {
+            ErrorMessage errorMessage= ErrorMessage.builder()
+                    .userMessage("Unable to delete client")
+                    .developerMessage("client not in database")
+                    .build();
+            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
+            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
+            return apiResponse;
+        } else {
+            clientRepository.delete(client);
+            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            apiResponse.responseEntity = ResponseEntity.ok("Successfully deleted client with "+client.getFirst_name());
+            return apiResponse;
+
+        }
+    }
+
 }

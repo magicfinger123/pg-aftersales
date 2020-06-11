@@ -5,6 +5,7 @@ import com.pgagtersales.pgaftersales.model.response.UserRest;
 import com.pgagtersales.pgaftersales.model.resquest.UserSignUpRequest;
 import com.pgagtersales.pgaftersales.service.UserService;
 import com.pgagtersales.pgaftersales.service.impl.UserServiceImpl;
+import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

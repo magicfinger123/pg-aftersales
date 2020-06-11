@@ -2,10 +2,8 @@ package com.pgagtersales.pgaftersales.io.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Date;
 
 @Entity(name = "generators")
 @Data
@@ -13,7 +11,7 @@ public class GeneratorEntity {
 
     public static final long serialVersionUID = 2828520025360413233L;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
@@ -23,7 +21,7 @@ public class GeneratorEntity {
     private String location;
 
     @Column(nullable = false, length = 50)
-    private String engine_serial;
+    private String engineSerial;
 
     @Column(nullable = false, length = 50)
     private String alternator_serial;
@@ -59,5 +57,5 @@ public class GeneratorEntity {
     private String contact_person_phone;
 
     @Column(nullable = false)
-    private String purchase_year;
+    private Date purchase_year;
 }

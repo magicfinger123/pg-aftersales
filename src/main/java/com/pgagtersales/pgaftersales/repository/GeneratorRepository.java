@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GeneratorRepository extends PagingAndSortingRepository<GeneratorEntity,Long> {
+public interface GeneratorRepository extends PagingAndSortingRepository<GeneratorEntity,Integer> {
 
     @Query(value = "SELECT * FROM `generators` WHERE (CONVERT(`id` USING utf8) LIKE %?1% OR " +
             "CONVERT(`client_id` USING utf8) LIKE %?1% OR CONVERT(`location` USING utf8) LIKE %?1% OR " +
@@ -26,4 +26,5 @@ public interface GeneratorRepository extends PagingAndSortingRepository<Generato
     @Query(value = "select * FROM `generators` where `client_id` = ?1 \n#Pageable\n", nativeQuery = true)
     Page<GeneratorEntity> findByClientId(String clientId, Pageable pageable);
     GeneratorEntity findById(int id);
+    GeneratorEntity findByEngineSerial(String engineSerial);
 }

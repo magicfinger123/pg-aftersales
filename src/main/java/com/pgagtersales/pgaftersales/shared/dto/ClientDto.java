@@ -10,6 +10,7 @@ import lombok.Data;
 
 @Data
 public class ClientDto {
+    private int  id;
     private String  username;
     private String first_name;
     private String last_name;

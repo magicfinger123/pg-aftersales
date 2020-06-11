@@ -27,8 +27,6 @@ public class ResponseBuilder {
     public ApiResponse failedResponse(int httpStatus) {
         apiResponse.statusCode = httpStatus;
         apiResponse.requestSuccessful = false;
-        apiResponse.apiErrors = new ApiErrors();
-        apiResponse.apiWarnings = new ApiWarnings();
         return apiResponse;
     }
 }
