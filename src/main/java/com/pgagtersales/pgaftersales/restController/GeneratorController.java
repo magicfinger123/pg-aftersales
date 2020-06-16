@@ -31,7 +31,6 @@ public class GeneratorController {
     @GetMapping(path = "/search/{alias}")
     public ResponseEntity searchGenerators(@PathVariable String alias, @RequestParam(value = "page",defaultValue = "1") int page,  @RequestParam(value = "size",defaultValue = "25") int size)
     {
-        List<GeneratorDto> returnValue = new ArrayList<>();
         ApiResponse apiResponse = genService.searchGenerators(alias,page,size);
         return  ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }

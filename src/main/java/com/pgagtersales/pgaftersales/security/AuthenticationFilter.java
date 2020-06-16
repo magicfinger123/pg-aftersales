@@ -56,5 +56,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.addHeader(SecurityConstant.HEADER_STRING,SecurityConstant.TOKEN_PREFIX+token);
         System.out.println(""+SecurityConstant.HEADER_STRING +" "+SecurityConstant.TOKEN_PREFIX+token);
         response.addHeader("UserID", userDto.getUserId());
+        response.addHeader("Role", userDto.getRole());
+        response.addHeader("First_name", userDto.getFirst_name());
+        response.addHeader("Department", userDto.getDepartment());
     }
 }

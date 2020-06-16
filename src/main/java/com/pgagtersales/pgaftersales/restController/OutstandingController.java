@@ -33,7 +33,11 @@ public class OutstandingController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> updateGeneratorService(@RequestBody int page,int size)
     {
+        Long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = outstandingService.getOutstanding(page, size);
-        return ResponseEntity.ok(apiResponse);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

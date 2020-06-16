@@ -1,6 +1,7 @@
 package com.pgagtersales.pgaftersales.restController;
 
 
+import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.UserRest;
 import com.pgagtersales.pgaftersales.model.resquest.UserSignUpRequest;
 import com.pgagtersales.pgaftersales.service.UserService;
@@ -9,11 +10,9 @@ import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -23,6 +22,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private
+    ApiResponse apiResponse;
 
     @PostMapping()
     public UserRest signUpUsers(@RequestBody UserSignUpRequest userSignUpRequest)
@@ -35,6 +38,28 @@ public class UserController {
         UserDto userDto1 = userService.createUser(userDto);
         BeanUtils.copyProperties(userDto1, returnValue);
         return returnValue;
+    }
+    @GetMapping("/{username}")
+    public ResponseEntity<ApiResponse> getUserByUsername(@PathVariable  (value = "username") String username)
+    {
+        return null;
+    }
+    @GetMapping()
+    public ResponseEntity<ApiResponse> getUserAllUser()
+    {
+        Long startTime = System.currentTimeMillis();
+        apiResponse = userService.getAllUsers();
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @GetMapping("/Checklogin")
+    public ResponseEntity<ApiResponse> getByUserId(@RequestParam("userId") String userId){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = userService.getUserbyUserId(userId);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 
 }

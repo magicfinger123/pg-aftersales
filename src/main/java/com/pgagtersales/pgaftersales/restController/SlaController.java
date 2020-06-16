@@ -42,6 +42,6 @@ public class SlaController
         BeanUtils.copyProperties(slaUpdateDto, slaEntity);
         slaEntity.setActive(true);
         ApiResponse apiResponse = slaService.updateGenService(slaEntity);
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

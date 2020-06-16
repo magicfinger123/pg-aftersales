@@ -31,7 +31,11 @@ public class MarkettingController {
     @PostMapping()
     public ResponseEntity<ApiResponse> addNewProspectiveClient(@RequestBody MarkettingDto markettingDto)
     {
+        Long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = markettingService.addNewMarkettingLead(markettingDto);
-        return ResponseEntity.ok(apiResponse);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

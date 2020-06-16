@@ -39,6 +39,6 @@ public class GeneratorInspectionController {
         Long duration = System.currentTimeMillis()-startTime;
         ApiResponse apiResponse = generatorInspectionService.addInspection(generatorInspectionDto,notification);
         apiResponse.executionTime = Double.valueOf(duration)/100;
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

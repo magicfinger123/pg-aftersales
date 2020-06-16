@@ -41,6 +41,6 @@ public class ServiceInspectionController {
         Long duration = System.currentTimeMillis()-startTime;
         ApiResponse apiResponse = serviceInspectionService.addServiceInspection(serviceInspectionDto,notification);
         apiResponse.executionTime = Double.valueOf(duration)/100;
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

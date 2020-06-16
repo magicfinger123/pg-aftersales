@@ -34,17 +34,11 @@ public class SlaServiceImpl implements SlaService {
         System.out.println("sla entity: "+slaEntity);
         SlaEntity slaEntity1 = slaRepository.save(slaEntity);
         if (slaEntity1 == null){
-            ErrorMessage errorMessage = ErrorMessage.builder()
-                    .developerMessage("failed to update generator service Status")
-                    .userMessage("something was not right")
-                    .build();
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
-            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
-            return apiResponse;
+            throw new UserServiceException("something went wrong","Sla returned null");
         }else{
             ActionResponse actionResponse = ActionResponse.builder()
                     .actionStatus("Successful")
-                    .action("Update Generator Service Details")
+                    .action("Updated Generator Service Details")
                     .build();
             ApiResponse apiResponse = responseBuilder.successfullResponse();
             apiResponse.responseEntity = ResponseEntity.ok(actionResponse);

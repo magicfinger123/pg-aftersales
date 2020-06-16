@@ -152,13 +152,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         GeneratorDto returnValue = new GeneratorDto();
         GeneratorEntity generatorEntity = generatorRepository.findById(id);
         if (generatorEntity == null) {
-            ErrorMessage errorMessage= ErrorMessage.builder()
-                    .userMessage("Error Occured")
-                    .developerMessage("Id not found")
-                    .build();
-            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
-            return apiResponse;
+            throw new UserServiceException("something went wrong","generator id not found");
         } else {
             BeanUtils.copyProperties(generatorEntity, returnValue);
             ApiResponse apiResponse = responseBuilder.successfullResponse();
