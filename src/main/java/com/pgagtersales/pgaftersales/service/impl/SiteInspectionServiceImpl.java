@@ -8,16 +8,13 @@ package com.pgagtersales.pgaftersales.service.impl;
 
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.SuccessMessage;
-import com.pgagtersales.pgaftersales.io.entity.SiteInspectionEntity;
 import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.repository.SiteInspectionRepository;
 import com.pgagtersales.pgaftersales.service.SiteInspectionService;
-import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import com.pgagtersales.pgaftersales.shared.dto.SiteInspectionDto;
 import lombok.SneakyThrows;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,8 +30,8 @@ public class SiteInspectionServiceImpl implements SiteInspectionService {
     @Autowired
     NotificationMessages message;
 
-    String[] recipent = {"exc.easey@gmail.com"};
-    String[] ccRecipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
+    String[] ccRecipent = {"info@powergen@gmail.com"};
 
     @SneakyThrows
     @Override
@@ -42,7 +39,7 @@ public class SiteInspectionServiceImpl implements SiteInspectionService {
        // SiteInspectionEntity inspectionEntity = new SiteInspectionEntity();
        // BeanUtils.copyProperties(siteInspectionDto, inspectionEntity);
         //SiteInspectionEntity saveUser = siteInspectionRepository.save(inspectionEntity);
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         SuccessMessage successMessage = SuccessMessage.builder().message("Site Inspection Logged Successfully").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         if (sendNotification){

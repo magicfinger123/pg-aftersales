@@ -32,15 +32,15 @@ public class MarkettingServiceImpl implements MarkettingService {
     SendMail sendMail;
     @Autowired
     NotificationMessages message;
-    String[] recipent = {"exc.easey@gmail.com"};
-    String[] ccRecipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
+    String[] ccRecipent = {"info@powergen@gmail.com"};
     @SneakyThrows
     @Override
     public ApiResponse addNewMarkettingLead(MarkettingDto markettingDto) {
         ModelMapper modelMapper = new ModelMapper();
         MarkettingEntity markettingEntity = modelMapper.map(markettingDto, MarkettingEntity.class);
         MarkettingEntity saveEntity = markettingRepository.save(markettingEntity);
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         SuccessMessage successMessage = SuccessMessage.builder().message("Prospective Client detail has been logged").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         sendMail.sendEmailWithAttachment(message.prospectiveClientNNotification(markettingDto)[0],recipent,ccRecipent, "POWERGEN SITE INSPECTION REPORT");

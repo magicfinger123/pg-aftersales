@@ -6,8 +6,8 @@
 
 package com.pgagtersales.pgaftersales.service.impl;
 
+import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.HttpResponses;
-import com.pgagtersales.pgaftersales.io.entity.GeneratorEntity;
 import com.pgagtersales.pgaftersales.io.entity.OutstandingEntity;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ErrorMessage;
@@ -15,7 +15,6 @@ import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.model.resquest.ClientDto;
 import com.pgagtersales.pgaftersales.repository.OutstandingRepository;
 import com.pgagtersales.pgaftersales.service.OutstandingService;
-import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import com.pgagtersales.pgaftersales.shared.dto.OutstandingDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +39,7 @@ public class OutstandingServiceImpl implements OutstandingService {
         Pageable pageable = PageRequest.of(page, size);
         Page<OutstandingEntity> outstanding = outstandingRepository.findAll(pageable);
         if (outstanding == null || outstanding.isEmpty()) {
-            ErrorMessage errorMessage = ErrorMessage.builder()
-                    .userMessage("No result")
-                    .developerMessage("getGenerators returned null value")
-                    .build();
-            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
-            return apiResponse;
+            throw new UserServiceException("Something went wrong","outstanding returned null");
         } else {
             List<OutstandingEntity> outstandingEntities = outstanding.getContent();
             for (OutstandingEntity out : outstandingEntities) {
@@ -54,7 +47,7 @@ public class OutstandingServiceImpl implements OutstandingService {
                 BeanUtils.copyProperties(out, outDto);
                 returnValue.add(outDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }

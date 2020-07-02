@@ -33,7 +33,7 @@ public class BreakdownReportServiceImpl implements BreakdownReportService {
     SendMail sendMail;
     @Autowired
     NotificationMessages message;
-    String[] recipent = {"exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
     String[] ccRecipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
     @SneakyThrows
     @Override
@@ -53,7 +53,7 @@ public class BreakdownReportServiceImpl implements BreakdownReportService {
             return apiResponse;
         }
         else {
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             SuccessMessage successMessage = SuccessMessage.builder().message("Breakdown report Logged Successfully").build();
             apiResponse.responseEntity = ResponseEntity.ok(successMessage);
             if (sendNotification) {

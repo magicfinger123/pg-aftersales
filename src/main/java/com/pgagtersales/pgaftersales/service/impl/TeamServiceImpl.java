@@ -26,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class TeamServiceImpl implements TeamService {
                 }
                 returnedValue.add(teamDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -179,7 +178,7 @@ public class TeamServiceImpl implements TeamService {
                 }
                 returnedValue.add(teamDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -195,7 +194,7 @@ public class TeamServiceImpl implements TeamService {
             throw new UserServiceException("something went wrong","generator id not found");
         } else {
             BeanUtils.copyProperties(teamEntity, returnValue);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }

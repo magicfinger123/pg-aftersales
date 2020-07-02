@@ -80,7 +80,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 BeanUtils.copyProperties(scheduleEntity, scheduleDto);
                 returnedValue.add(scheduleDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             returnValue.setTeamDto(teamDto);
             returnValue.setScheduleDtos(scheduleDtos);
             returnValue.setInventoryDtos(inventoryDtos);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
 
@@ -139,7 +139,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new UserServiceException("something went wrong","schedule id not found");
         } else {
             BeanUtils.copyProperties(entity, returnValue);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -233,7 +233,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 BeanUtils.copyProperties(ent,scheduleTaskDto);
                 returnValue.add(scheduleTaskDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }

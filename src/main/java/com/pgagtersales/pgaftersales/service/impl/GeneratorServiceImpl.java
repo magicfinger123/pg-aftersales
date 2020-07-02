@@ -6,7 +6,6 @@ import com.pgagtersales.pgaftersales.io.HttpResponses;
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.entity.ClientsEntity;
 import com.pgagtersales.pgaftersales.io.entity.GeneratorEntity;
-import com.pgagtersales.pgaftersales.io.entity.UserEntity;
 import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ErrorMessage;
@@ -15,9 +14,9 @@ import com.pgagtersales.pgaftersales.repository.ClientRepository;
 import com.pgagtersales.pgaftersales.repository.GeneratorRepository;
 import com.pgagtersales.pgaftersales.service.GeneratorService;
 import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
+import com.pgagtersales.pgaftersales.shared.dto.ClientDtoResponse;
 import com.pgagtersales.pgaftersales.shared.dto.GeneratorByClientIdDto;
 import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
-import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +25,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     @Autowired
     NotificationMessages message;
 
-    String[] recipent = {"exc.easy@gmail.com","ossaimike8@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com","info@powergen@gmail.com"};
 
     @Override
     public ApiResponse searchGenerators(String alias, int page, int size) {
@@ -73,7 +74,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 BeanUtils.copyProperties(gen, genDto);
                 returnValue.add(genDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -102,7 +103,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 returnValue.add(genDto);
 
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -112,15 +113,30 @@ public class GeneratorServiceImpl implements GeneratorService {
     public ApiResponse getGenByClientId(String clientId) {
         ClientsEntity clientsEntity = clientRepository.findById(Integer.parseInt(clientId));
         if (clientsEntity == null){
-            ErrorMessage errorMessage= ErrorMessage.builder()
-                    .userMessage("Error Occured")
-                    .developerMessage("ClientId not found")
-                    .build();
-            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
-            return apiResponse;
+            throw new UserServiceException("Client not found","client not found");
         }
         ModelMapper modelMapper = new ModelMapper();
+        ClientDto clientDto = modelMapper.map(clientsEntity, ClientDto.class);
+
+        ClientDtoResponse ctr = modelMapper.map(clientsEntity, ClientDtoResponse.class);
+        GeneratorByClientIdDto generatorByClientIdDto = new GeneratorByClientIdDto();
+        generatorByClientIdDto.setClientDto(ctr);
+        generatorByClientIdDto.setGeneratorDtos(clientDto.getGeneratorDtos());
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(generatorByClientIdDto);
+        return apiResponse;
+
+
+
+
+
+
+
+
+
+
+
+      /*  ModelMapper modelMapper = new ModelMapper();
         ClientDto clientDto = modelMapper.map(clientsEntity, ClientDto.class);
         List<GeneratorDto> returnValue = new ArrayList<>();
         GeneratorByClientIdDto generatorByClientIdDto = new GeneratorByClientIdDto();
@@ -143,10 +159,29 @@ public class GeneratorServiceImpl implements GeneratorService {
         }
         generatorByClientIdDto.setClientDto(clientDto);
         generatorByClientIdDto.setGeneratorDtos(returnValue);
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(generatorByClientIdDto);
+        return apiResponse;*/
+    }
+
+    @Override
+    public ApiResponse getGenByClientDto(String clientId) {
+        Iterable<GeneratorEntity> generatorEntities = new ArrayList<>();
+        List<GeneratorDto> generatorDtos = new ArrayList<>();
+        ClientsEntity clientsEntity = clientRepository.findById(Integer.parseInt(clientId));
+        if (clientsEntity != null){
+            /*generatorEntities = generatorRepository.findAllByClientDto(clientsEntity);
+            for (GeneratorEntity generatorEntity:generatorEntities){
+                generatorDtos.add(new ModelMapper().map(generatorEntity,GeneratorDto.class));
+            }*/
+        }else{
+            throw new UserServiceException("Something went wrong","Something went wrong");
+        }
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(generatorEntities);
         return apiResponse;
     }
+
     @Override
     public ApiResponse getGenerator(int id) throws UserServiceException{
         GeneratorDto returnValue = new GeneratorDto();
@@ -155,7 +190,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             throw new UserServiceException("something went wrong","generator id not found");
         } else {
             BeanUtils.copyProperties(generatorEntity, returnValue);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -163,18 +198,34 @@ public class GeneratorServiceImpl implements GeneratorService {
     @SneakyThrows
     @Override
     public ApiResponse addGenerator(GeneratorDto generatorDto, Boolean sendNotification) {
-        GeneratorDto returnValue = new GeneratorDto();
+        //GeneratorDto returnValue = new GeneratorDto();
+        ModelMapper modelMapper = new ModelMapper();
         GeneratorEntity generatorEntity = generatorRepository.findByEngineSerial(generatorDto.getEngineSerial());
         if (generatorEntity != null) {
             throw new UserServiceException("user already exist","user already exist");
         }
+        ClientsEntity client = clientRepository.findById(generatorDto.getClient_idx());
+        if (client == null){
+            throw new UserServiceException("associated client not found: "+generatorDto.getClient_idx(),"associated client not found");
+        }
+        ClientDto clientDto = modelMapper.map(client,ClientDto.class);
+        clientDto.getGeneratorDtos().add(generatorDto);
+        ClientsEntity updateEntity = modelMapper.map(clientDto,ClientsEntity.class);
+        updateEntity.setPassword(client.getPassword());
+        ClientsEntity savedClientEntity = clientRepository.save(updateEntity);
+        if (savedClientEntity == null){
+            throw new UserServiceException("unable to add generator","unable to add generator");
+        }
+
+
         //GeneratorEntity genEntity = new GeneratorEntity();
         //BeanUtils.copyProperties(generatorDto, genEntity);
-        ModelMapper modelMapper = new ModelMapper();
-        GeneratorEntity genEntity =  modelMapper.map(generatorDto, GeneratorEntity.class);
-        GeneratorEntity saveUser = generatorRepository.save(genEntity);
-        BeanUtils.copyProperties(saveUser, returnValue);
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        //ModelMapper modelMapper = new ModelMapper();
+       // ClientDto  returnValue =  modelMapper.map(savedClientEntity, ClientDto.class);
+       // GeneratorEntity saveUser = generatorRepository.save(genEntity);
+       // BeanUtils.copyProperties(saveUser, returnValue);
+        ClientDto  returnValue =  modelMapper.map(savedClientEntity, ClientDto.class);
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         if (sendNotification){
             sendMail.sendEmailWithAttachment(message.addGenNotification(generatorDto),recipent,recipent, "GENERATOR SERVICE NOTIFICATION");
@@ -197,7 +248,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             BeanUtils.copyProperties(generatorDto, generatorEntity);
             GeneratorEntity saveUser = generatorRepository.save(generatorEntity);
             BeanUtils.copyProperties(saveUser, returnValue);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -215,7 +266,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             return apiResponse;
         } else {
             generatorRepository.delete(generatorEntity);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok("Successfully deleted generator with "+generatorEntity.getAlternator_serial());
             return apiResponse;
         }

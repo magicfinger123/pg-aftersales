@@ -6,10 +6,14 @@
 
 package com.pgagtersales.pgaftersales.model.resquest;
 
+import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ClientDto {
+
     private String  username;
     private String first_name;
     private String last_name;
@@ -19,6 +23,7 @@ public class ClientDto {
     private String company;
     private String address;
     private String cluster;
-    private String visible;
+    private int visible;
     private String password;
+    private List<GeneratorDto> generatorDtos;
 }

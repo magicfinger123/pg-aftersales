@@ -50,6 +50,14 @@ public class GeneratorController {
         apiResponse.executionTime = Double.valueOf(duration)/100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
+    @GetMapping(path = "/getcb/{id}")
+    public ResponseEntity<ApiResponse> getGenerator(@PathVariable int id){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = genService.getGenByClientDto(String.valueOf(id));
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
     @PostMapping(path = "/generator_commission/{notify}")
     public ResponseEntity<ApiResponse> addGenerators(@RequestBody GeneratorDto generatorDto, @PathVariable int notify)
     {

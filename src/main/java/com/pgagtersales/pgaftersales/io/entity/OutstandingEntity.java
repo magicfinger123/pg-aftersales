@@ -6,6 +6,7 @@
 
 package com.pgagtersales.pgaftersales.io.entity;
 
+import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -19,8 +20,8 @@ public class OutstandingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, length = 50, unique = true, name = "client_id")
-    private String  clientId;
+ /*   @Column(nullable = false, length = 50, unique = true, name = "client_id")
+    private String  clientId;*/
 
     @Column(nullable = false, length = 50)
     private String description;
@@ -45,4 +46,8 @@ public class OutstandingEntity {
 
     @Column(nullable = false, name = "is_active")
     private int visible;
+
+   /* @ManyToOne
+    @JoinColumn(name = "clients_id")
+    private ClientsEntity clientDto;*/
 }

@@ -8,14 +8,10 @@ import java.sql.Date;
 @Entity(name = "generators")
 @Data
 public class GeneratorEntity {
-
     public static final long serialVersionUID = 2828520025360413233L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(nullable = false)
-    private int client_id;
 
     @Column(nullable = false, length = 100)
     private String location;
@@ -56,6 +52,8 @@ public class GeneratorEntity {
     @Column(nullable = false)
     private String contact_person_phone;
 
-    @Column(nullable = false)
-    private Date purchase_year;
+    @Column(nullable = false, name = "purchase_year")
+    private Date date;
+/*    @ManyToOne(fetch = FetchType.LAZY)
+    private ClientsEntity clientDto;*/
 }

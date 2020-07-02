@@ -11,8 +11,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class GeneratorByClientIdDto {
-    //changed
-    private ClientDtoResponse clientDto;
-    private List<GeneratorDto> generatorDtos;
+public class UpdateInventoryItemDto {
+    private String inventoryId;
+    private List<InventoryItemDto> inventoryItemDtos;
 }

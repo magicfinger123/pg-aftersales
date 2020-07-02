@@ -36,8 +36,8 @@ public class GeneratorInspectionServiceImpl implements GeneratorInspectionServic
     SendMail sendMail;
     @Autowired
     NotificationMessages message;
-    String[] recipent = {"exc.easey@gmail.com"};
-    String[] ccRecipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
+    String[] ccRecipent = {"info@powergen@gmail.com"};
     @SneakyThrows
     @Override
     public ApiResponse addInspection(GeneratorInspectionDto generatorInspectionDto, Boolean sendNotification) {
@@ -55,7 +55,7 @@ public class GeneratorInspectionServiceImpl implements GeneratorInspectionServic
             apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
             return apiResponse;
         } else {
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             SuccessMessage successMessage = SuccessMessage.builder().message("Inspection Report Logged Successfully").build();
             apiResponse.responseEntity = ResponseEntity.ok(successMessage);
             if (sendNotification) {

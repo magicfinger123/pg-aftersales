@@ -16,7 +16,7 @@ public class ResponseBuilder {
     @Autowired
     ApiResponse apiResponse;
 
-    public ApiResponse successfullResponse() {
+    public ApiResponse successfulResponse() {
         apiResponse.statusCode = HttpResponses.HTTP_STATUS_OK;
         apiResponse.requestSuccessful = true;
         apiResponse.apiErrors = new ApiErrors();

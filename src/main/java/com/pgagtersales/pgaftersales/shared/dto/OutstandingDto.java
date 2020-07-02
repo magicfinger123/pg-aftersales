@@ -13,6 +13,8 @@ public class OutstandingDto {
     public static final long serialVersionUID = 6411563565645445491L;
     private int id;
     private String  clientId;
+    private String clientName;
+    private String companyName;
     private String description;
     private String invoicedAmount;
     private String amountPaid;

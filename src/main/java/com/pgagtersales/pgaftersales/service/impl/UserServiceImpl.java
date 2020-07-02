@@ -5,7 +5,6 @@ import com.pgagtersales.pgaftersales.io.entity.UserEntity;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.repository.UserRepository;
-import com.pgagtersales.pgaftersales.security.AuthorizationFilter;
 import com.pgagtersales.pgaftersales.service.UserService;
 import com.pgagtersales.pgaftersales.shared.Utils;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(userEntity, returnValue);
         returnValue.setPassword("");
         returnValue.setEncryptedPassword("");
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         return apiResponse;
     }
@@ -89,7 +88,7 @@ public class UserServiceImpl implements UserService {
                 BeanUtils.copyProperties(team, userDto);
                 returnedValue.add(userDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {

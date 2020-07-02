@@ -13,6 +13,7 @@ import com.pgagtersales.pgaftersales.model.resquest.ScheduleCreationDto;
 import com.pgagtersales.pgaftersales.service.InventoryService;
 import com.pgagtersales.pgaftersales.service.ScheduleService;
 import com.pgagtersales.pgaftersales.shared.dto.InventoryItemDto;
+import com.pgagtersales.pgaftersales.shared.dto.UpdateInventoryItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,14 @@ public class InventoryController {
     public ResponseEntity<ApiResponse> addItemToInventory(@RequestBody InventoryItemDto inventoryItemDto){
         Long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = inventoryService.addItemToInventory(inventoryItemDto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PostMapping("/update/inventory_item")
+    public ResponseEntity<ApiResponse> updateInventoryDtos(@RequestBody UpdateInventoryItemDto inventoryItemDto){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.getItemsByInventoryIds(inventoryItemDto);
         Long duration = System.currentTimeMillis()-startTime;
         apiResponse.executionTime = Double.valueOf(duration)/100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);

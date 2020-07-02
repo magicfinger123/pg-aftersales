@@ -8,11 +8,10 @@ package com.pgagtersales.pgaftersales.shared.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ClientDto {
+public class ClientDtoResponse {
     private int  id;
     private String  username;
     private String first_name;
@@ -24,5 +23,4 @@ public class ClientDto {
     private String address;
     private String cluster;
     private int visible;
-    private List<GeneratorDto> generatorDtos = new ArrayList<>();
 }

@@ -12,14 +12,13 @@ import com.pgagtersales.pgaftersales.io.entity.SlaEntity;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.resquest.SlaUpdateRequest;
 import com.pgagtersales.pgaftersales.service.SlaService;
+import com.pgagtersales.pgaftersales.shared.dto.SlaPriceListDto;
+import com.pgagtersales.pgaftersales.shared.dto.SlaRequestDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @ResponseBody
@@ -42,6 +41,18 @@ public class SlaController
         BeanUtils.copyProperties(slaUpdateDto, slaEntity);
         slaEntity.setActive(true);
         ApiResponse apiResponse = slaService.updateGenService(slaEntity);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PostMapping("/notify")
+    public ResponseEntity<ApiResponse> slaRequest(@RequestBody SlaRequestDto slaRequestDto)
+    {
+        ApiResponse apiResponse = slaService.notifyCustomer(slaRequestDto);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PostMapping("/priceList")
+    public ResponseEntity<ApiResponse> updatePriceList(@RequestBody SlaPriceListDto slaPriceListDto)
+    {
+        ApiResponse apiResponse = slaService.updatePriceList(slaPriceListDto);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

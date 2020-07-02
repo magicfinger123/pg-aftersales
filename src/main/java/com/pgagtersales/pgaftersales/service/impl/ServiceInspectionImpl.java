@@ -33,8 +33,8 @@ public class ServiceInspectionImpl implements ServiceInspectionService {
     SendMail sendMail;
     @Autowired
     NotificationMessages message;
-    String[] recipent = {"exc.easey@gmail.com"};
-    String[] ccRecipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
+    String[] ccRecipent = {"info@powergen@gmail.com"};
     @SneakyThrows
     @Override
     public ApiResponse addServiceInspection(ServiceInspectionDto serviceInspectionDto, Boolean sendNotification) throws Exception{
@@ -52,7 +52,7 @@ public class ServiceInspectionImpl implements ServiceInspectionService {
             return apiResponse;
         }
         else {
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             SuccessMessage successMessage = SuccessMessage.builder().message("Service/Inspection Logged Successfully").build();
             apiResponse.responseEntity = ResponseEntity.ok(successMessage);
             if (sendNotification) {

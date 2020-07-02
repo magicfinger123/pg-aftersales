@@ -9,9 +9,9 @@ public interface GeneratorService {
     ApiResponse searchGenerators(String alias, int page, int size);
     ApiResponse getGenerators(int page, int size);
     ApiResponse getGenByClientId(String clientId);
+    ApiResponse getGenByClientDto(String clientId);
     ApiResponse getGenerator(int id);
     ApiResponse addGenerator(GeneratorDto generatorDto, Boolean sendNotification);
     ApiResponse updateGenerator(int id, GeneratorDto generatorDto);
     ApiResponse deleteGenerator(int id);
-
 }

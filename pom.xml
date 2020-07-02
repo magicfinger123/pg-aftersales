@@ -11,6 +11,7 @@
 	<groupId>com.pg-agtersales</groupId>
 	<artifactId>pg-aftersales</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<!--<packaging>war</packaging>-->
 	<name>pg-aftersales</name>
 	<description>powergen Mobile and Api Projects</description>
 
@@ -90,6 +91,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- ::this remove to run -->
+
+		<!--<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>-->
+
+		<!-- ::this remove to run on local -->
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
@@ -98,6 +109,8 @@
 	</dependencies>
 
 	<build>
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -107,8 +120,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

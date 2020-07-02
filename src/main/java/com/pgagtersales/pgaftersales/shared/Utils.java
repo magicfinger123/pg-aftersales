@@ -31,7 +31,7 @@ public class Utils {
         return new String(returnValue);
     }
     public ApiResponse sucessApiResponse(String s) {
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         SuccessMessage successMessage = SuccessMessage.builder().message(s).build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         return apiResponse;

@@ -2,11 +2,14 @@ package com.pgagtersales.pgaftersales.shared.dto;
 
 import lombok.Data;
 
+import java.sql.Date;
+
 @Data
 public class GeneratorDto {
     public static final long serialVersionUID = 2828520025360413233L;
     private int id;
-    private int client_id;
+    private int client_idx;
+    private String clientName;
     private String location;
     private String engineSerial;
     private String alternator_serial;
@@ -20,5 +23,7 @@ public class GeneratorDto {
     private String generator_type;
     private String contact_person;
     private String contact_person_phone;
-    private String purchase_year;
+    private Date date;
+    //private ClientDto clientDto;
+
 }

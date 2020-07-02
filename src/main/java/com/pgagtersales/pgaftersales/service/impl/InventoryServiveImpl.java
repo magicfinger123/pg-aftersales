@@ -7,25 +7,28 @@
 package com.pgagtersales.pgaftersales.service.impl;
 
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
+import com.pgagtersales.pgaftersales.io.SendMail;
+import com.pgagtersales.pgaftersales.io.SuccessMessage;
 import com.pgagtersales.pgaftersales.io.entity.InventoryEntity;
 import com.pgagtersales.pgaftersales.io.entity.InventoryItemEntity;
-import com.pgagtersales.pgaftersales.io.entity.ScheduleTaskEntity;
+import com.pgagtersales.pgaftersales.io.entity.UserEntity;
+import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.model.resquest.InventoryCreationDto;
-import com.pgagtersales.pgaftersales.repository.InventoryItemRepository;
-import com.pgagtersales.pgaftersales.repository.InventoryRepository;
-import com.pgagtersales.pgaftersales.repository.TeamRepository;
+import com.pgagtersales.pgaftersales.repository.*;
 import com.pgagtersales.pgaftersales.service.InventoryService;
 import com.pgagtersales.pgaftersales.shared.Utils;
-import com.pgagtersales.pgaftersales.shared.dto.InventoryDto;
-import com.pgagtersales.pgaftersales.shared.dto.InventoryItemDto;
+import com.pgagtersales.pgaftersales.shared.dto.*;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +46,16 @@ public class InventoryServiveImpl implements InventoryService {
     ResponseBuilder responseBuilder;
     @Autowired
     private Utils utils;
+    @Autowired
+    SendMail sendMail;
+    @Autowired
+    NotificationMessages message;
+    @Autowired
+    private UserRepository userRepository;
+
+    String[] recipent = {"powergenltd@gmail.com"};
+    String[] ccRecipent = {"info@powergen@gmail.com"};
+
     @Override
     public ApiResponse createInventory(InventoryCreationDto inventoryCreationDto) {
         if (inventoryRepository.findByInventoryName(inventoryCreationDto.getInventoryName())!=null) {
@@ -79,7 +92,7 @@ public class InventoryServiveImpl implements InventoryService {
                 BeanUtils.copyProperties(inventoryEntities, inventoryDto);
                 returnedValue.add(inventoryDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -99,7 +112,7 @@ public class InventoryServiveImpl implements InventoryService {
                 BeanUtils.copyProperties(inventoryEntities, inventoryDto);
                 returnedValue.add(inventoryDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -123,7 +136,7 @@ public class InventoryServiveImpl implements InventoryService {
                 BeanUtils.copyProperties(inventoryEntities, inventoryDto);
                 returnedValue.add(inventoryDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {
@@ -205,6 +218,64 @@ public class InventoryServiveImpl implements InventoryService {
             throw new UserServiceException("Unable to delete item","something went wrong: "+e.getLocalizedMessage());
         }
     }
+
+    @SneakyThrows
+    @Override
+    public ApiResponse getItemsByInventoryIds(UpdateInventoryItemDto inventoryId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getPrincipal().toString();
+        System.out.println(username);
+        UserEntity userDto = userRepository.findByUsername(username);
+        UserDto userDto1 = new UserDto();
+        BeanUtils.copyProperties(userDto,userDto1);
+
+        List<InventoryItemDto> returnedValue = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        List<InventoryNotification> inventoryNotifications = new ArrayList<>();
+        Page<InventoryItemEntity> entityPage = inventoryItemRepository.findByInventoryId(inventoryId.getInventoryId(),pageable);
+        List<InventoryItemEntity> inventoryEntities = entityPage.getContent();
+        for (InventoryItemEntity inventoryEntity : inventoryEntities) {
+            InventoryItemDto inventoryDto = new InventoryItemDto();
+            BeanUtils.copyProperties(inventoryEntity, inventoryDto);
+            returnedValue.add(inventoryDto);
+        }
+        returnedValue.retainAll(inventoryId.getInventoryItemDtos());
+        List<InventoryItemDto> inventoryItemDtos = inventoryId.getInventoryItemDtos();
+        inventoryItemDtos.removeAll(returnedValue);
+        for (InventoryItemDto dto: inventoryItemDtos) {
+
+            InventoryItemEntity ent = inventoryItemRepository.findByInventoryItemId(dto.getInventoryItemId());
+            int previousQty = ent.getItemQty();
+            if (ent != null){
+                BeanUtils.copyProperties(dto,ent);
+                InventoryItemEntity nn = inventoryItemRepository.save(ent);
+                int newQty = nn.getItemQty();
+                String updatedQty = "";
+                if (previousQty > newQty) {
+                    int used = previousQty - newQty;
+                    updatedQty = "Used up "+used+" "+nn.getItemUnits()+" "+nn.getItemName();
+                }else{
+                    int added = newQty - previousQty;
+                    updatedQty = "Added "+added+" "+nn.getItemUnits()+" "+nn.getItemName();
+                }
+                System.out.println("updated qty "+updatedQty);
+                InventoryNotification notificationItem = new InventoryNotification(nn.getItemName(),previousQty,newQty,
+                        updatedQty);
+                inventoryNotifications.add(notificationItem);
+            }else
+            {
+                System.out.println("unable to save"+dto.getInventoryItemId());
+            }
+        }
+
+            sendMail.sendEmailWithAttachment(message.inventoryNotification(inventoryNotifications, userDto1), recipent, ccRecipent, userDto1.getUsername() + " Inventory Update");
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        SuccessMessage successMessage = SuccessMessage.builder().message("Update Successful").build();
+        apiResponse.responseEntity = ResponseEntity.ok(successMessage);
+
+        return apiResponse;
+    }
+
     @Override
     public ApiResponse getItemsByInventoryId(String inventoryId) {
         List<InventoryItemDto> returnedValue = new ArrayList<>();
@@ -217,7 +288,7 @@ public class InventoryServiveImpl implements InventoryService {
                 BeanUtils.copyProperties(inventoryEntity, inventoryDto);
                 returnedValue.add(inventoryDto);
             }
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnedValue);
             return apiResponse;
         } catch (Exception e) {

@@ -13,6 +13,7 @@ import com.pgagtersales.pgaftersales.model.response.*;
 import com.pgagtersales.pgaftersales.repository.ClientRepository;
 import com.pgagtersales.pgaftersales.service.ClientService;
 import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,13 +40,7 @@ public class ClientServiceImpl implements ClientService {
         Pageable pageable = PageRequest.of(page, size);
         Page<ClientsEntity> clientPage = clientRepository.findAll(pageable);
         if (clientPage == null || clientPage.isEmpty()) {
-            ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            ErrorMessage errorMessage = ErrorMessage.builder()
-                    .developerMessage("User not found")
-                    .userMessage("User not found")
-                    .build();
-            failedResponse.responseEntity = ResponseEntity.ok(errorMessage);
-            return failedResponse;
+            throw new UserServiceException("Empty list returned","empty list returned");
         } else {
             List<ClientsEntity> clientList = clientPage.getContent();
             for (ClientsEntity client : clientList) {
@@ -53,7 +48,7 @@ public class ClientServiceImpl implements ClientService {
                 BeanUtils.copyProperties(client, clientDto);
                 returnedValue.add(clientDto);
             }
-            ApiResponse getClients = responseBuilder.successfullResponse();
+            ApiResponse getClients = responseBuilder.successfulResponse();
             getClients.responseEntity = ResponseEntity.ok(returnedValue);
 
             return getClients;
@@ -66,13 +61,7 @@ public class ClientServiceImpl implements ClientService {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<ClientsEntity> clientsPage = clientRepository.searchClient(alias, pageable);
         if (clientsPage == null || clientsPage.isEmpty()) {
-            ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            ErrorMessage errorMessage = ErrorMessage.builder()
-                    .developerMessage("search result returned null")
-                    .userMessage("No result")
-                    .build();
-            failedResponse.responseEntity = ResponseEntity.status(failedResponse.getStatusCode()).body(errorMessage);
-            return failedResponse;
+            throw new UserServiceException("client not found","search not found");
         } else {
             List<ClientsEntity> clients = clientsPage.getContent();
             for (ClientsEntity clientEntity : clients) {
@@ -80,7 +69,7 @@ public class ClientServiceImpl implements ClientService {
                 BeanUtils.copyProperties(clientEntity, client);
                 returnValue.add(client);
             }
-            ApiResponse getClients = responseBuilder.successfullResponse();
+            ApiResponse getClients = responseBuilder.successfulResponse();
             getClients.responseEntity = ResponseEntity.status(getClients.getStatusCode()).body(returnValue);
             return getClients;
         }
@@ -101,7 +90,7 @@ public class ClientServiceImpl implements ClientService {
         } else {
             ClientDto clientDto = new ClientDto();
             BeanUtils.copyProperties(clientsEntity, clientDto);
-            ApiResponse successresponse = responseBuilder.successfullResponse();
+            ApiResponse successresponse = responseBuilder.successfulResponse();
             successresponse.responseEntity = ResponseEntity.ok(clientDto);
             return successresponse;
 
@@ -123,7 +112,7 @@ public class ClientServiceImpl implements ClientService {
         } else {
             ClientDto clientDto = new ClientDto();
             BeanUtils.copyProperties(clientsEntity, clientDto);
-            ApiResponse successresponse = responseBuilder.successfullResponse();
+            ApiResponse successresponse = responseBuilder.successfulResponse();
             successresponse.responseEntity = ResponseEntity.ok(clientDto);
             return successresponse;
 
@@ -132,16 +121,19 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public ApiResponse addClient(com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto) {
-        ClientDto returnValue = new ClientDto();
+        //ClientDto returnValue = new ClientDto();
         ClientsEntity client = clientRepository.findByUsername(clientDto.getUsername());
         if (client != null) {
             throw new UserServiceException("client already exist", "client already exist");
         }
-        ClientsEntity clientsEntity = new ClientsEntity();
-        BeanUtils.copyProperties(clientDto, clientsEntity);
+       // ClientsEntity clientsEntity = new ClientsEntity();
+       // BeanUtils.copyProperties(clientDto, clientsEntity);
+        ModelMapper modelMapper = new ModelMapper();
+        ClientsEntity clientsEntity = modelMapper.map(clientDto, ClientsEntity.class);
         ClientsEntity saveUser = clientRepository.save(clientsEntity);
-        BeanUtils.copyProperties(saveUser, returnValue);
-        ApiResponse apiResponse = responseBuilder.successfullResponse();
+       // BeanUtils.copyProperties(saveUser, returnValue);
+        ClientDto returnValue  = modelMapper.map(saveUser, ClientDto.class);
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         return apiResponse;
     }
@@ -162,7 +154,7 @@ public class ClientServiceImpl implements ClientService {
             BeanUtils.copyProperties(clientDto, client);
             ClientsEntity saveUser = clientRepository.save(client);
             BeanUtils.copyProperties(saveUser, returnValue);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
         }
@@ -181,11 +173,10 @@ public class ClientServiceImpl implements ClientService {
             return apiResponse;
         } else {
             clientRepository.delete(client);
-            ApiResponse apiResponse = responseBuilder.successfullResponse();
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok("Successfully deleted client with "+client.getFirst_name());
             return apiResponse;
 
         }
     }
-
 }
