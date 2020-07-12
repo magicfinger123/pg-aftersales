@@ -16,5 +16,6 @@ public class InventoryItemDto {
     private String inventoryId;
     private String itemName;
     private String itemUnits;
+    private String inventoryManager;
     private int itemQty;
 }

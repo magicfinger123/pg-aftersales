@@ -10,9 +10,12 @@ import lombok.Data;
 
 @Data
 public class SlaRequestDto {
+    private String client_no;
+    private String client_email;
     private String clientName;
     private String clientAddress;
     private String genId;
+    private String genLocation;
     private String genSize;
     private String genCategory;
     private String engineSerial;

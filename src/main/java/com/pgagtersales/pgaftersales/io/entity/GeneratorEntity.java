@@ -19,10 +19,10 @@ public class GeneratorEntity {
     @Column(nullable = false, length = 50)
     private String engineSerial;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = true, length = 50)
     private String alternator_serial;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String alternator_type;
 
     @Column(nullable = false, length = 50)
@@ -51,6 +51,15 @@ public class GeneratorEntity {
 
     @Column(nullable = false)
     private String contact_person_phone;
+
+    @Column(nullable = true, length = 100, name = "maintenance_type")
+    private Integer maintenanceType;
+
+    @Column(nullable = true, length = 50, name = "maintenance_start_date")
+    private Date maintenanceStartDate;
+
+    @Column(nullable = true, name = "service_done")
+    private Integer serviceDone;
 
     @Column(nullable = false, name = "purchase_year")
     private Date date;

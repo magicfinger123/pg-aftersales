@@ -9,22 +9,24 @@ package com.pgagtersales.pgaftersales.service.impl;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.SuccessMessage;
-import com.pgagtersales.pgaftersales.io.entity.ClientsEntity;
-import com.pgagtersales.pgaftersales.io.entity.GeneratorEntity;
-import com.pgagtersales.pgaftersales.io.entity.OutstandingEntity;
-import com.pgagtersales.pgaftersales.io.entity.SlaPriceListEntity;
+import com.pgagtersales.pgaftersales.io.entity.*;
 import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.repository.ClientRepository;
 import com.pgagtersales.pgaftersales.repository.GeneratorRepository;
 import com.pgagtersales.pgaftersales.repository.OutstandingRepository;
+import com.pgagtersales.pgaftersales.repository.ReportLogRepo;
 import com.pgagtersales.pgaftersales.service.PaymentService;
+import com.pgagtersales.pgaftersales.shared.AppConstants;
+import com.pgagtersales.pgaftersales.shared.Utils;
 import com.pgagtersales.pgaftersales.shared.dto.PaymentAdviseDto;
 import com.pgagtersales.pgaftersales.shared.dto.PaymentNotificationBuilderDto;
+import com.pgagtersales.pgaftersales.shared.dto.ReportLogDto;
 import com.pgagtersales.pgaftersales.shared.dto.SlaPriceListDto;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,12 @@ public class PaymentServiceImpl implements PaymentService {
     GeneratorRepository generatorRepository;
     @Autowired
     NotificationMessages message;
-    String[] recipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    String[] recipent = {"powergenltd@gmail.com"};
+    @Autowired
+    private Utils utils;
+
+    @Autowired
+    private ReportLogRepo reportLogRepo;
     @SneakyThrows
     @Override
     public ApiResponse makePayment(PaymentAdviseDto paymentAdviseDto) {
@@ -54,9 +61,11 @@ public class PaymentServiceImpl implements PaymentService {
         returnValue.setBalance(amountInvoiced-amountPaid);
         returnValue.setPaymentType(paymentAdviseDto.getPaymentType());
         ClientsEntity client = clientRepository.findById(Integer.parseInt(paymentAdviseDto.getClientId()));
+
         if (client == null){
             throw new UserServiceException("client does not exist in the database","client does not exist in the database");
         }
+        String new_recipennt = client.getEmail();
         returnValue.setClientName(client.getFirst_name());
         if (client.getOutstandingDtos()!=null) {
             int totalOut = 0;
@@ -81,11 +90,26 @@ public class PaymentServiceImpl implements PaymentService {
             returnValue.setServicesAlreadyDone(paymentAdviseDto.getServicesAlreadyDone());
             returnValue.setPaymentDescription(paymentAdviseDto.getPaymentItem());
         }else{
+            returnValue.setSlaType(null);
             returnValue.setPaymentDescription(paymentAdviseDto.getPaymentDescription());
         }
-        sendMail.sendEmailWithAttachment(message.paymentAdviseNotification(returnValue),recipent,recipent, "Sla notice");
+        sendMail.sendEmailWithAttachment(message.paymentAdviseNotification(returnValue),new_recipennt, AppConstants.FINANCE_AND_AFTERSALES, "PAYMENT ADVICE");
+        try {
+            ReportLogDto reportLogDto = new ReportLogDto();
+            reportLogDto.setUserId(message.getUserDetails().getUserId());
+            reportLogDto.setDescription("Sent payment advice to "+client.getCompany()+" of payment of "+returnValue.getAmountPaid()+" for "+returnValue.getPaymentDescription());
+            reportLogDto.setAction("SLA renewal notice");
+            reportLogDto.setStatus("completed");
+            reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+            reportLogDto.setTime(utils.getTime());
+            ReportLogEntity ent = new ReportLogEntity();
+            BeanUtils.copyProperties(reportLogDto,ent);
+            reportLogRepo.save(ent);
+        } catch (BeansException e) {
+            System.out.println("reportlog error: "+e.getLocalizedMessage());
+        }
         ApiResponse apiResponse = responseBuilder.successfulResponse();
-        SuccessMessage successMessage = SuccessMessage.builder().message("Site Inspection Logged Successfully").build();
+        SuccessMessage successMessage = SuccessMessage.builder().message("Payment notification sent successfully").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         return apiResponse;
     }

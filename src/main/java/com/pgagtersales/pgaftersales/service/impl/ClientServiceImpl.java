@@ -9,10 +9,13 @@ package com.pgagtersales.pgaftersales.service.impl;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.HttpResponses;
 import com.pgagtersales.pgaftersales.io.entity.ClientsEntity;
+import com.pgagtersales.pgaftersales.io.entity.OutstandingEntity;
 import com.pgagtersales.pgaftersales.model.response.*;
+import com.pgagtersales.pgaftersales.model.resquest.ClientDtoReq;
 import com.pgagtersales.pgaftersales.repository.ClientRepository;
 import com.pgagtersales.pgaftersales.service.ClientService;
 import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
+import com.pgagtersales.pgaftersales.shared.dto.OutstandingDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private ResponseBuilder responseBuilder;
+
+    private ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public ApiResponse getClients(int page, int size) {
@@ -112,6 +117,15 @@ public class ClientServiceImpl implements ClientService {
         } else {
             ClientDto clientDto = new ClientDto();
             BeanUtils.copyProperties(clientsEntity, clientDto);
+            List<OutstandingDto> outstandingDtos = new ArrayList<>();
+            for (OutstandingEntity out:clientsEntity.getOutstandingDtos()) {
+                OutstandingDto dto = new OutstandingDto();
+                BeanUtils.copyProperties(out, dto);
+                dto.setClientName(clientsEntity.getFirst_name());
+                dto.setCompanyName(clientsEntity.getCompany());
+                outstandingDtos.add(dto);
+            }
+            clientDto.setOutstandingDtos(outstandingDtos);
             ApiResponse successresponse = responseBuilder.successfulResponse();
             successresponse.responseEntity = ResponseEntity.ok(clientDto);
             return successresponse;
@@ -120,7 +134,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponse addClient(com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto) {
+    public ApiResponse addClient(ClientDtoReq clientDto) {
         //ClientDto returnValue = new ClientDto();
         ClientsEntity client = clientRepository.findByUsername(clientDto.getUsername());
         if (client != null) {
@@ -139,25 +153,42 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ApiResponse updateClient(int id, com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto) {
+    public ApiResponse updateClient(int id, ClientDtoReq clientDto) {
+        ClientsEntity client = clientRepository.findById(id);
+        System.out.println("client username: "+clientDto.getUsername());
+        if (client == null) {
+            throw new UserServiceException("client does not exist", "client does not exist");
+        }
+        // ClientsEntity clientsEntity = new ClientsEntity();
+        // BeanUtils.copyProperties(clientDto, clientsEntity);
+        ModelMapper modelMapper = new ModelMapper();
+        ClientsEntity clientsEntity = modelMapper.map(clientDto, ClientsEntity.class);
+        clientsEntity.setId(client.getId());
+        clientsEntity.setUsername(client.getUsername());
+        clientsEntity.setPassword(client.getPassword());
+        ClientsEntity saveUser = clientRepository.save(clientsEntity);
+        // BeanUtils.copyProperties(saveUser, returnValue);
+        ClientDto returnValue  = modelMapper.map(saveUser, ClientDto.class);
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(returnValue);
+        return apiResponse;
+        /*System.out.println();
         ClientDto returnValue = new ClientDto();
         ClientsEntity client = clientRepository.findById(id);
         if (client == null) {
-            ErrorMessage errorMessage = ErrorMessage.builder()
-                    .userMessage("Error Occured")
-                    .developerMessage("Id not found")
-                    .build();
-            ApiResponse apiResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
-            apiResponse.responseEntity = ResponseEntity.badRequest().body(errorMessage);
-            return apiResponse;
+            throw new UserServiceException("client not found","client nnot found");
         } else {
+            ClientsEntity ennt = modelMapper.map(clientDto, ClientsEntity.class);
+            ennt.setId(client.getId());
+            ennt.setPassword(client.getPassword());
+            ennt.setOutstandingDtos(null);
             BeanUtils.copyProperties(clientDto, client);
-            ClientsEntity saveUser = clientRepository.save(client);
+            ClientsEntity saveUser = clientRepository.save(ennt);
             BeanUtils.copyProperties(saveUser, returnValue);
             ApiResponse apiResponse = responseBuilder.successfulResponse();
             apiResponse.responseEntity = ResponseEntity.ok(returnValue);
             return apiResponse;
-        }
+        }*/
     }
     @Override
     public ApiResponse deleteClient(int id) {
@@ -179,4 +210,5 @@ public class ClientServiceImpl implements ClientService {
 
         }
     }
+
 }

@@ -17,7 +17,7 @@ public class ClientsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50, unique = true, name = "username")
     private String  username;
     @Column(nullable = false, length = 50)
     private String password;
@@ -41,11 +41,10 @@ public class ClientsEntity {
     @Column(nullable = false)
     private int visible;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", nullable = false)
     private List<OutstandingEntity> outstandingDtos = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id")
     private List<GeneratorEntity> generatorDtos = new ArrayList<>();
-
 }
 

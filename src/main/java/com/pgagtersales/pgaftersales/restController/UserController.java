@@ -6,6 +6,7 @@ import com.pgagtersales.pgaftersales.model.response.UserRest;
 import com.pgagtersales.pgaftersales.model.resquest.UserSignUpRequest;
 import com.pgagtersales.pgaftersales.service.UserService;
 import com.pgagtersales.pgaftersales.service.impl.UserServiceImpl;
+import com.pgagtersales.pgaftersales.shared.dto.ChangePasswordDto;
 import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +39,15 @@ public class UserController {
         UserDto userDto1 = userService.createUser(userDto);
         BeanUtils.copyProperties(userDto1, returnValue);
         return returnValue;
+    }
+    @PostMapping("/changePassword")
+    public ResponseEntity<ApiResponse> changePasswprd(@RequestBody ChangePasswordDto dto)
+    {
+        Long startTime = System.currentTimeMillis();
+        apiResponse = userService.changeUserPassword(dto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @GetMapping("/{username}")
     public ResponseEntity<ApiResponse> getUserByUsername(@PathVariable  (value = "username") String username)

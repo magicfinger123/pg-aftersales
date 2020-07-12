@@ -2,9 +2,9 @@ package com.pgagtersales.pgaftersales.restController;
 
 import com.pgagtersales.pgaftersales.io.LogTimeFilter;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
-import com.pgagtersales.pgaftersales.model.resquest.ClientDto;
+import com.pgagtersales.pgaftersales.model.resquest.ClientDtoReq;
 import com.pgagtersales.pgaftersales.service.ClientService;
-import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
+import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +33,7 @@ class ClientsController {
         ApiResponse returnedValue  = clientService.searchClients(alias,page,size);
         returnedValue.requestedCommand = "/clients";
         long duration = System.currentTimeMillis() - startTime;
-        returnedValue.executionTime = Double.valueOf(duration)/1000;
+        returnedValue.executionTime = (double) duration /1000;
         System.out.println(ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue));
         return ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue);
     }
@@ -44,7 +44,7 @@ class ClientsController {
         ApiResponse returnedValue = clientService.getClients(page,size);
         returnedValue.requestedCommand = "/clients";
         long duration = System.currentTimeMillis() - startTime;
-        returnedValue.executionTime = Double.valueOf(duration)/1000;
+        returnedValue.executionTime = (double) duration /1000;
         System.out.println(ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue));
         return ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue);
     }
@@ -55,36 +55,36 @@ class ClientsController {
         ApiResponse returnedValue = clientService.getClientById(clientId);
         returnedValue.requestedCommand = "/get-client/"+clientId;
         long duration = System.currentTimeMillis() - startTime;
-        returnedValue.executionTime = Double.valueOf(duration)/1000;
+        returnedValue.executionTime = (double) duration /1000;
         System.out.println(ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue));
         return ResponseEntity.status(returnedValue.getStatusCode()).body(returnedValue);
     }
 
     @PostMapping(path = "/client_action")
-    public ResponseEntity<ApiResponse> addClient(@RequestBody com.pgagtersales.pgaftersales.model.resquest.ClientDto clientDto)
+    public ResponseEntity<ApiResponse> addClient(@RequestBody ClientDtoReq clientDto)
     {
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = clientService.addClient(clientDto);
-        Long duration = System.currentTimeMillis()-startTime;
-        apiResponse.executionTime = Double.valueOf(duration)/100;
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @PutMapping(path = "/client_action/{id}")
-    public ResponseEntity<ApiResponse> updateClient(@PathVariable int id, @RequestBody ClientDto clientDto)
+    public ResponseEntity<ApiResponse> updateClient(@PathVariable int id, @RequestBody ClientDtoReq clientDto)
     {
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = clientService.updateClient(id, clientDto);
-        Long duration = System.currentTimeMillis()-startTime;
-        apiResponse.executionTime = Double.valueOf(duration)/100;
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @DeleteMapping(path = "/client_action/{id}")
     public ResponseEntity<ApiResponse> deleteClient(@PathVariable int id)
     {
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = clientService.deleteClient(id);
-        Long duration = System.currentTimeMillis()-startTime;
-        apiResponse.executionTime = Double.valueOf(duration)/100;
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

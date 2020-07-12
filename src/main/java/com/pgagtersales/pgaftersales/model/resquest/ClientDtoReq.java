@@ -7,13 +7,13 @@
 package com.pgagtersales.pgaftersales.model.resquest;
 
 import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
+import com.pgagtersales.pgaftersales.shared.dto.OutstandingDto;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ClientDto {
-
+public class ClientDtoReq {
     private String  username;
     private String first_name;
     private String last_name;
@@ -25,5 +25,6 @@ public class ClientDto {
     private String cluster;
     private int visible;
     private String password;
+
     private List<GeneratorDto> generatorDtos;
 }

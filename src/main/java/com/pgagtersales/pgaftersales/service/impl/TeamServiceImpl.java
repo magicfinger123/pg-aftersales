@@ -7,6 +7,7 @@
 package com.pgagtersales.pgaftersales.service.impl;
 
 
+import com.pgagtersales.pgaftersales.controller.NotificationController;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.entity.*;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
@@ -16,6 +17,7 @@ import com.pgagtersales.pgaftersales.repository.TeamRepository;
 import com.pgagtersales.pgaftersales.repository.UserRepository;
 import com.pgagtersales.pgaftersales.service.TeamService;
 import com.pgagtersales.pgaftersales.shared.Utils;
+import com.pgagtersales.pgaftersales.shared.dto.NotificationRequestDto;
 import com.pgagtersales.pgaftersales.shared.dto.TeamDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -46,7 +48,10 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private Utils utils;
 
+    @Autowired
+    private NotificationController notificationController;
 
+    NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
 
 
     @Override
@@ -66,6 +71,34 @@ public class TeamServiceImpl implements TeamService {
         try {
             TeamEntity createTeam = teamRepository.save(teamEntity);
             ApiResponse apiResponse = utils.sucessApiResponse(teamCreationRequest.getTeamTitle()+ "Schedule has been created");
+            notificationRequestDto.setTarget(createTeam.getTeamLead());
+            notificationRequestDto.setTitle("PEL TEAMS");
+            notificationRequestDto.setBody("You have been assigned to head a team, click for more details");
+            notificationController.sendPnsToTopic(notificationRequestDto);
+            if (createTeam.getTeamMember1().length()>1){
+                notificationRequestDto.setTarget(createTeam.getTeamLead());
+                notificationRequestDto.setTitle("PEL TEAMS");
+                notificationRequestDto.setBody("You have been assigned to head a team, click for more details");
+                notificationController.sendPnsToTopic(notificationRequestDto);
+            }
+            if (createTeam.getTeamMember2().length()>1){
+                notificationRequestDto.setTarget(createTeam.getTeamLead());
+                notificationRequestDto.setTitle("PEL TEAMS");
+                notificationRequestDto.setBody("You have been assigned to a team \nYour team lead is "+createTeam.getTeamLead());
+                notificationController.sendPnsToTopic(notificationRequestDto);
+            }
+            if (createTeam.getTeamMember3().length()>1){
+                notificationRequestDto.setTarget(createTeam.getTeamLead());
+                notificationRequestDto.setTitle("PEL TEAMS");
+                notificationRequestDto.setBody("You have been assigned to a team \nYour team lead is "+createTeam.getTeamLead());
+                notificationController.sendPnsToTopic(notificationRequestDto);
+            }
+            if (createTeam.getTeamMember4().length()>1){
+                notificationRequestDto.setTarget(createTeam.getTeamLead());
+                notificationRequestDto.setTitle("PEL TEAMS");
+                notificationRequestDto.setBody("You have been assigned to a team \nYour team lead is "+createTeam.getTeamLead());
+                notificationController.sendPnsToTopic(notificationRequestDto);
+            }
             return apiResponse;
         } catch (Exception e) {
             throw new UserServiceException("Unable to create schedule","something went wrong: "+e.getLocalizedMessage());

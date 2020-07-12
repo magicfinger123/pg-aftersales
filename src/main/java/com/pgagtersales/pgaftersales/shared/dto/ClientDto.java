@@ -24,5 +24,6 @@ public class ClientDto {
     private String address;
     private String cluster;
     private int visible;
+    private List<OutstandingDto> outstandingDtos = new ArrayList<>();
     private List<GeneratorDto> generatorDtos = new ArrayList<>();
 }

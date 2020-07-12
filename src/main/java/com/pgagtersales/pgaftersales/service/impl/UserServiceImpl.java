@@ -1,12 +1,14 @@
 package com.pgagtersales.pgaftersales.service.impl;
 
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
+import com.pgagtersales.pgaftersales.io.SuccessMessage;
 import com.pgagtersales.pgaftersales.io.entity.UserEntity;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.repository.UserRepository;
 import com.pgagtersales.pgaftersales.service.UserService;
 import com.pgagtersales.pgaftersales.shared.Utils;
+import com.pgagtersales.pgaftersales.shared.dto.ChangePasswordDto;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +97,25 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException("Unable to create schedule","something went wrong: "+e.getLocalizedMessage());
         }
     }
+
+    @Override
+    public ApiResponse changeUserPassword(ChangePasswordDto dto) {
+        UserEntity user = userRepository.findByUsername(dto.getUsername());
+        if (user == null){
+            throw new UserServiceException("username incorrect", "username incorrect");
+        }
+        user.setEncryptedPassword(bCryptPasswordEncoder.encode(dto.getPassword()).toString());
+        user.setPassword(dto.getPassword());
+        UserEntity saveUser = userRepository.save(user);
+        if (saveUser==null){
+            throw new UserServiceException("unable to change password", "could not change password");
+        }
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        SuccessMessage successMessage = SuccessMessage.builder().message("Password Successfully changed").build();
+        apiResponse.responseEntity = ResponseEntity.ok(successMessage);
+        return apiResponse;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByUsername(s);

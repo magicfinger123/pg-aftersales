@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,17 +15,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.mail.MessagingException;
 import java.io.IOException;
 
-@SpringBootApplication
-public class PgAftersalesApplication{
-	//extends SpringBootServletInitializer {
 
-	/*//::this should be removed to run on local
+@SpringBootApplication
+public class PgAftersalesApplication extends SpringBootServletInitializer {
+
+	//::this should be removed to run on local
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		//return super.configure(builder);
 		return builder.sources(PgAftersalesApplication.class);
 	}
-	//*/
+	//
 
 	public static void main(String[] args) {
 		SpringApplication.run(PgAftersalesApplication.class, args);

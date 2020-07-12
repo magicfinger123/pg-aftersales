@@ -10,6 +10,8 @@ import lombok.Data;
 
 @Data
 public class BreakdownReportDto {
+    private String client_id;
+    private String client_email;
     private String firstName;
     private String streetAdd;
     private String engineSerial;

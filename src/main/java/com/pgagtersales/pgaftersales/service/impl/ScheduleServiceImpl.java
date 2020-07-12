@@ -67,7 +67,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new UserServiceException("Unable to create schedule","something went wrong: "+e.getLocalizedMessage());
         }
     }
-
     @Override
     public ApiResponse getAllSchedule(int page, int size) {
         List<ScheduleDto> returnedValue = new ArrayList<>();
@@ -87,7 +86,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new UserServiceException("Unable to get schedule","something went wrong: "+e.getLocalizedMessage());
         }
     }
-
     @Override
     public ApiResponse getScheduleByTeamId(String teamId) {
         ScheduleByTeamId returnValue = new ScheduleByTeamId();

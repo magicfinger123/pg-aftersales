@@ -6,27 +6,32 @@
 
 package com.pgagtersales.pgaftersales.service.impl;
 
+import com.pgagtersales.pgaftersales.controller.NotificationController;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.SuccessMessage;
-import com.pgagtersales.pgaftersales.io.entity.ScheduleEntity;
-import com.pgagtersales.pgaftersales.io.entity.SlaEntity;
-import com.pgagtersales.pgaftersales.io.entity.SlaPriceListEntity;
+import com.pgagtersales.pgaftersales.io.entity.*;
 import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ActionResponse;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
+import com.pgagtersales.pgaftersales.repository.GeneratorRepository;
+import com.pgagtersales.pgaftersales.repository.ReportLogRepo;
 import com.pgagtersales.pgaftersales.repository.SlaPriceListRepository;
 import com.pgagtersales.pgaftersales.repository.SlaRepository;
 import com.pgagtersales.pgaftersales.service.SlaService;
-import com.pgagtersales.pgaftersales.shared.dto.ScheduleDto;
-import com.pgagtersales.pgaftersales.shared.dto.SlaPriceListDto;
-import com.pgagtersales.pgaftersales.shared.dto.SlaRequestDto;
+import com.pgagtersales.pgaftersales.shared.AppConstants;
+import com.pgagtersales.pgaftersales.shared.Utils;
+import com.pgagtersales.pgaftersales.shared.dto.*;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class SlaServiceImpl implements SlaService {
@@ -35,6 +40,8 @@ public class SlaServiceImpl implements SlaService {
     @Autowired
     SlaPriceListRepository slaPriceListRepository;
     @Autowired
+    GeneratorRepository generatorRepository;
+    @Autowired
     ResponseBuilder responseBuilder;
     @Autowired
     private SendMail sendMail;
@@ -42,7 +49,16 @@ public class SlaServiceImpl implements SlaService {
     @Autowired
     NotificationMessages message;
 
-    String[] recipent = {"ossaimike8@gmail.com","exc.easey@gmail.com"};
+    @Autowired
+    private NotificationController notificationController;
+
+    NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+    @Autowired
+    private ReportLogRepo reportLogRepo;
+    @Autowired
+    private Utils utils;
+
+    String[] recipent = {"powergenltd@gmail.com"};
     @Override
     public ApiResponse updateGenService(SlaEntity slaEntity) {
         if (slaEntity==null){
@@ -67,6 +83,10 @@ public class SlaServiceImpl implements SlaService {
     @Override
     public ApiResponse notifyCustomer(SlaRequestDto slaRequestDto) {
         SlaPriceListEntity priceList = slaPriceListRepository.findByRating(slaRequestDto.getGenCategory());
+        GeneratorEntity gen = generatorRepository.findById(Integer.parseInt(slaRequestDto.getGenId()));
+        if (gen != null){
+            slaRequestDto.setGenLocation(gen.getLocation());
+        }
         if (priceList == null){
             throw new UserServiceException("Wrong input","genCategory not in priceList"+slaRequestDto.getGenCategory());
         }
@@ -88,14 +108,54 @@ public class SlaServiceImpl implements SlaService {
                 slaRequestDto.setSlaType("12 services");
                 break;
         }
-        sendMail.sendEmailWithAttachment(message.slaRequestotification(slaRequestDto),recipent,recipent, "Sla notice");
-        ApiResponse apiResponse = responseBuilder.successfulResponse();
-        SuccessMessage successMessage = SuccessMessage.builder().message("Site Inspection Logged Successfully").build();
-        apiResponse.responseEntity = ResponseEntity.ok(successMessage);
-        return apiResponse;
+        String new_recipennt = slaRequestDto.getClient_email();
+        if(!slaRequestDto.getRenewal()){
+            sendMail.sendEmailWithAttachment(message.slaProposal(slaRequestDto), new_recipennt, AppConstants.AFTERSALES_RECIPENTS, "GENERATOR MAINTENANCE PROPOSAL");
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
+            SuccessMessage successMessage = SuccessMessage.builder().message("Generator Maintenance proposal sent successfully").build();
+            apiResponse.responseEntity = ResponseEntity.ok(successMessage);
+            notificationRequestDto.setTarget("admin");
+            notificationRequestDto.setTitle("PEL SLA PROPOSAL");
+            notificationRequestDto.setBody("proposal sent by "+message.getUserDetails().getFirst_name()+" to "+slaRequestDto.getClientName()+" on "+slaRequestDto.getGenSize());
+            notificationController.sendPnsToTopic(notificationRequestDto);
+            ReportLogDto reportLogDto = new ReportLogDto();
+            reportLogDto.setUserId(message.getUserDetails().getUserId());
+            reportLogDto.setDescription("Sent maintenance proposal to "+slaRequestDto.getClientName()+" on his/her "+slaRequestDto.getGenSize());
+            reportLogDto.setAction("Maintenance proposal");
+            reportLogDto.setStatus("completed");
+            reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+            reportLogDto.setTime(utils.getTime());
+            ReportLogEntity ent = new ReportLogEntity();
+            BeanUtils.copyProperties(reportLogDto,ent);
+            reportLogRepo.save(ent);
+            return apiResponse;
+        }else {
+            sendMail.sendEmailWithAttachment(message.slaRequestotification(slaRequestDto), new_recipennt, AppConstants.AFTERSALES_RECIPENTS, "GENERATOR MAINTENANCE RENEWAL NOTICE");
+            ApiResponse apiResponse = responseBuilder.successfulResponse();
+            SuccessMessage successMessage = SuccessMessage.builder().message("Renewal Notice sent successfully").build();
+            apiResponse.responseEntity = ResponseEntity.ok(successMessage);
+            notificationRequestDto.setTarget("admin");
+            notificationRequestDto.setTitle("PEL SLA RENEWAL");
+            notificationRequestDto.setBody("renewal notice sent by "+message.getUserDetails().getFirst_name()+" to "+slaRequestDto.getClientName()+" on "+slaRequestDto.getGenSize());
+            notificationController.sendPnsToTopic(notificationRequestDto);
+            try {
+                ReportLogDto reportLogDto = new ReportLogDto();
+                reportLogDto.setUserId(message.getUserDetails().getUserId());
+                reportLogDto.setDescription("Sent Sla renewal to "+slaRequestDto.getClientName()+" on his/her "+slaRequestDto.getGenSize());
+                reportLogDto.setAction("SLA renewal notice");
+                reportLogDto.setStatus("completed");
+                reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+                reportLogDto.setTime(utils.getTime());
+                ReportLogEntity ent = new ReportLogEntity();
+                BeanUtils.copyProperties(reportLogDto,ent);
+                reportLogRepo.save(ent);
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
+            return apiResponse;
+        }
+
     }
-
-
     @Override
     public ApiResponse updatePriceList(SlaPriceListDto slaPriceListDto) {
         SlaPriceListEntity slaPriceListEntity = new SlaPriceListEntity();
@@ -107,11 +167,5 @@ public class SlaServiceImpl implements SlaService {
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         return apiResponse;
     }
- /*   public boolean checknull(SlaEntity slaEntity) throws IllegalAccessException {
-        for (Field f : getClass().getDeclaredFields())
-            if (f.get(this) != null)
-                return false;
-            return true;
-        }*/
-    }
+}
 

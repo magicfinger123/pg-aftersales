@@ -7,12 +7,10 @@
 package com.pgagtersales.pgaftersales.service.impl;
 
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
-import com.pgagtersales.pgaftersales.io.HttpResponses;
 import com.pgagtersales.pgaftersales.io.entity.OutstandingEntity;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
-import com.pgagtersales.pgaftersales.model.response.ErrorMessage;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
-import com.pgagtersales.pgaftersales.model.resquest.ClientDto;
+import com.pgagtersales.pgaftersales.model.resquest.ClientDtoReq;
 import com.pgagtersales.pgaftersales.repository.OutstandingRepository;
 import com.pgagtersales.pgaftersales.service.OutstandingService;
 import com.pgagtersales.pgaftersales.shared.dto.OutstandingDto;
@@ -38,7 +36,7 @@ public class OutstandingServiceImpl implements OutstandingService {
         List<OutstandingDto> returnValue = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, size);
         Page<OutstandingEntity> outstanding = outstandingRepository.findAll(pageable);
-        if (outstanding == null || outstanding.isEmpty()) {
+        if (outstanding.isEmpty()) {
             throw new UserServiceException("Something went wrong","outstanding returned null");
         } else {
             List<OutstandingEntity> outstandingEntities = outstanding.getContent();
@@ -59,12 +57,12 @@ public class OutstandingServiceImpl implements OutstandingService {
     }
 
     @Override
-    public ApiResponse addOutstanding(ClientDto clientDto) {
+    public ApiResponse addOutstanding(ClientDtoReq clientDto) {
         return null;
     }
 
     @Override
-    public ApiResponse updateOutstanding(int id, ClientDto clientDto) {
+    public ApiResponse updateOutstanding(int id, ClientDtoReq clientDto) {
         return null;
     }
 

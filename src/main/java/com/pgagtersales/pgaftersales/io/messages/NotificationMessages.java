@@ -6,31 +6,51 @@
 
 package com.pgagtersales.pgaftersales.io.messages;
 
+import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
+import com.pgagtersales.pgaftersales.io.entity.UserEntity;
+import com.pgagtersales.pgaftersales.model.resquest.InventoryCreationDto;
+import com.pgagtersales.pgaftersales.repository.ClientRepository;
+import com.pgagtersales.pgaftersales.repository.UserRepository;
+import com.pgagtersales.pgaftersales.shared.Utils;
 import com.pgagtersales.pgaftersales.shared.dto.*;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Component
 public class NotificationMessages {
+
+    @Autowired
+    private  UserRepository userRepository;
+
+    @Autowired
+    private Utils utils;
+
     public String addGenNotification(GeneratorDto generatorDto) {
         String message = "<style>" +
                 "</style>" +
-                "<p>Site Inspection Report </p><br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "<p>Generator Commissioning Report </p><br>" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\">"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\">Item: </th>" +
-                "<th style=\"padding: 8px;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\">Details: </th>" +
-                "<th style=\"padding: 8px;\n" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\"></th>" +
+                "</thead>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -442,20 +462,21 @@ public class NotificationMessages {
         String message = "<style>" +
                 "</style>" +
                 "<p>Site Inspection Report </p><br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\">Items: </th>" +
-                "<th style=\"padding: 8px;\n" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\">Details: </th>" +
-                "<th style=\"padding: 8px;\n" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\"></th>" +
+                "</thead></tr>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -556,33 +577,7 @@ public class NotificationMessages {
                 "  border-top: 1px solid #ddd\"></td>" +
                 "</tr>" +
                 "<tr>" +
-               /* "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\">Accessibility to Hiab: </td>" +
-                "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\">" + siteInspection.getGenHiab() + " </td>" +
-                "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></td>" +
-                "</tr>" +
-                "<tr style=\"; background-color: #f9f9f9\">" +
-                "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\">Installation cable length and size</td>" +
-                "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\">" + siteInspection.getGenCable() + " </td>" +
-                "<td style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></td>" +
-                "</tr>" +*/
+
                 strBuilder.toString()+
                 //end of modification
                 "<h2>Client Preference and Inspector Recommendation</h2>"+
@@ -628,20 +623,21 @@ public class NotificationMessages {
         final String message = "<style>" +
                 "</style>" +
                 "Please find below, details of service<br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "  border-top: 1px solid #ddd\">Extra Details</th>" +
+                "</thead></tr>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -900,20 +896,21 @@ public class NotificationMessages {
         final String message = "<style>" +
                 "</style>" +
                 "Please find below, details of Breakdown <br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
                 "<th style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
                 "<th style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
                 "<th style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "  border-top: 1px solid #ddd\">Extra Details</th>" +
+                "</thead></tr>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -1214,20 +1211,21 @@ public class NotificationMessages {
         final String message = "<style>" +
                 "</style>" +
                 "Please find below, details of of Field Inspection<br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "</thead></tr>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -1623,20 +1621,21 @@ public class NotificationMessages {
         String message = "<style>" +
                 "</style>" +
                 "Field Marketting<br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "</thead></tr>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -1869,21 +1868,22 @@ public class NotificationMessages {
                 "</style>" +
                 "Inventory Notice " +
                 "<p>" +
-                "This is an update on the items assigned to: "+userDto.getUsername()+"</p><br>" +
-                "<Table class=\"table-striped\" style:  \"border-spacing: 0;" +
-                "  border-collapse: collapse; border: 1px solid #ddd !important;\">" +
-                "<th style=\"padding: 8px;\n" +
+                "This is an update on the items assigned to: "+userDto.getFirst_name()+" "+userDto.getLast_name()+"</p><br>" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
                 "  line-height: 1.42857143;\n" +
                 "  vertical-align: top;\n" +
                 "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
-                "<th style=\"padding: 8px;\n" +
-                "  line-height: 1.42857143;\n" +
-                "  vertical-align: top;\n" +
-                "  border-top: 1px solid #ddd\"></th>" +
+                "</tr></thead>" +
                 "<tr style=\"; background-color: #f9f9f9\">" +
                 "<td style=\"padding: 8px;\n" +
                 "  line-height: 1.42857143;\n" +
@@ -1900,6 +1900,22 @@ public class NotificationMessages {
                 "</tr>" +
                 "<tr>" +
                 strBuilder+
+
+
+                "<tr style=\"; background-color: #f9f9f9\">" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Date and Time:</td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">" +utils.getDate() + " </td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">"+utils.getTime()+"</td>" +
+                "</tr>"+
                 "</table>" +
                 "<p style=\"font-family: times, serif; font-size:10pt;\">Kind Regards</p>" +
                 "<p  style=\"font-family: verdana; font-size:10pt;\">For Powergen Engineering Limited</p><br>" +
@@ -1957,17 +1973,34 @@ public class NotificationMessages {
                 "</tr>" );
         String message = "<style>" +
                 "</style>" +
-                "<p>Date:   .......</p>"+
-                "<p>Cient: "+slaRequestDto.getClientName()+"</p>"+
-                "<p>Dear Sir ("+slaRequestDto.getClientName()+")</p>"+
-                "<p style=\"padding-left:100px\">NOTICE  OF YEARLY MAINTENANCE CONTRACT RENEWAL </p>"+
+                "<p>Date:   "+utils.getDate()+"</p>"+
+               // "<p>Cient: "+slaRequestDto.getClientName()+"</p>"+
+                "<p>Dear Esteemed Customer</p>"+
+                "<p style=\"padding-left:100px; font-weight: bold;\">NOTICE  OF YEARLY MAINTENANCE CONTRACT RENEWAL </p>"+
                 "<p>We thank you for the great opportunity accorded us to be of service to you over " +
                 "the years and we appreciate your continuous patronage. </p>"+
-                "<p>Please be notified that the maintenance agreement on your .......  " +
-                "Perkins generator located at the above address has expired and the no of services subscribed to has been exhausted.</p>"+
+                "<p>Please be notified that the maintenance agreement on your "+slaRequestDto.getGenSize()+" (KVA)" +
+
+                "Perkins generator located at \' "+slaRequestDto.getGenLocation()+"\'  has expired and the no of services subscribed to has been exhausted.</p>"+
                 "<p>We advise you make payment for the renewal of your contract to enable us continue our services to you. " +
                 "<p>The cost of renewing service contract as detailed below: . " +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\"><tr>"+
+                "<th style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Items: </th>" +
+                "<th style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Details: </th>" +
+                "<th style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\"></th>" +
+                "</thead></tr>" +
                 stringBuilder.toString()+
+                "</table>"+
                 "<p>We do hope the services provided in the previous year have been satisfactory as" +
                 " we look forward to providing you with the same high quality services in the coming cycle/year</p>"+
                 "<p>While thanking you for your patronage, we look forward to your payment for renewal soon. </p>"+
@@ -1976,6 +2009,91 @@ public class NotificationMessages {
                 "<p>Thank you for choosing Powergen Engineering Limited.</p>"+
 
                 "<p style=\"font-family: times, serif; font-size:10pt;\">Yours Faithfully</p>" +
+                "<p  style=\"font-family: verdana; font-size:10pt;\">For Powergen Engineering Limited</p><br>" +
+                "<br />"+
+                "<p  style=\"font-family: verdana; font-size:11pt;font-style:italic\">Customer Care Uint:</p>" +
+                "<ul>" +
+                "<li style=\"font-family: verdana; font-size:10pt;font-style:normal\">powergencustomercare@gmail.com</li>" +
+                "<li style=\"font-family: verdana; font-size:10pt;font-style:normal\">customercare@powergenltd.com</li>" +
+                "<li style=\"font-family: verdana; font-size:10pt;font-style:normal\">Phone: 09027777707, 0700-77777-07</li>" +
+                "</ul>" +
+                "<p  style=\"font-family: verdana; font-size:10pt;\">Website: www.powergenltd.com</p>";
+        return message;
+
+    }
+    public String slaProposal(SlaRequestDto slaRequestDto){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "<tr style=\"; background-color: #f9f9f9\">" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Generator Size:</td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">" + slaRequestDto.getGenSize() + " </td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\"></td>" +
+                "</tr>" +
+                "<tr>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">No of Services:</td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">" + slaRequestDto.getSlaType() + " </td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\"></td>" +
+                "</tr>" +
+                "<tr style=\"; background-color: #f9f9f9\">" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Amount:</td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">"  +slaRequestDto.getAmount() + " </td>" +
+                "<td style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\"></td>" +
+                "</tr>" );
+        String message = "<style>" +
+                "</style>" +
+                "<p>Date:   "+utils.getDate()+"</p>"+
+               // "<p>Cient: "+slaRequestDto.getClientName()+"</p>"+
+                "<p>Dear Esteemed Customer</p>"+
+                "<p style=\"padding-left:100px; font-weight: bold;\"> MAINTENANCE PROPOSAL FOR YOUR GENERATOR </p>"+
+                "<p>We like to introduce you to our maintenance Contract scheme for Generators.</p>"+
+                "<p>To enable you enjoy the warranty benefits on your generstor and based on the recommendations of " +
+                "the equipment manufacturers and the need to be involved in good maintenance culture, " +
+                "our maintenance schedule is drawn up, depending on the age and operating conditions of your gen to " +
+                "include the services provided below; <p>" +
+                "<p>Services Provided on the Generating Set: </p> " +
+                "<p>1. Monthly visit to inspect all electrical and mechanical parts. </p> " +
+                "<p>2. Full service of the generator every 200 hours; first service after the first " +
+                "100Hours of operation and subsequent services after every 200hours.</p> " +
+                "<p>3. Supply and installation of genuine service materials.</p> " +
+                "<p>4. Washing & steam cleaning of the radiator and the generator every 3 months or as at when necessary.</p> " +
+                "<p>5. Changing of Oil Filter, Fuel Filter, and Air Filter as recommended by the engine manufacturer.</p> " +
+                "<p>Find below the cost of Annual maintenance of your generator:</p> " +
+
+                stringBuilder.toString()+
+                "<p>This Plan also entitles you to: <p>" +
+                "<p>Prompt response calls within Lagos, free of charge.\n" +
+                "emergency calls 24 hours a day, 7 days a week; including Public Holidays.</p>"+
+                "All repairs will be quoted and billed separately after inspecting the Generating Set.</p>"+
+                "<p>We look forward to enlisting your generator into our retainer list.</p>"+
+                "<p>Thank you as we look forward to receiving your payments soon </p>"+
+
+                "<p style=\"font-family: times, serif; font-size:10pt;\">Regards</p>" +
                 "<p  style=\"font-family: verdana; font-size:10pt;\">For Powergen Engineering Limited</p><br>" +
                 "<br />"+
                 "<p  style=\"font-family: verdana; font-size:11pt;font-style:italic\">Customer Care Uint:</p>" +
@@ -2081,7 +2199,7 @@ public class NotificationMessages {
                 "}" +
                 "</style>"+
                 "<div id=\"myDIV\">"+
-                "<p>Dear Sir (Customer name)</p>" +
+                "<p>Dear Esteemed Customer</p>" +
                 "<p>We received with thanks your credit for the sum of N"+dto.getAmountPaid()+"" +
                 " being payment for "+dto.getPaymentDescription()+"</p>" +
                 strBuilder+
@@ -2090,5 +2208,502 @@ public class NotificationMessages {
                 "<p>Powergen Finance</p>" +
                 "</div>";
         return message;
+    }
+    public String reportsSubmit(ReportSubmissionDto dto){
+        StringBuilder strBuilder = new StringBuilder();
+        int x = 1;
+        for (ReportLogDto log: dto.getReportLogDtos()) {
+            strBuilder.append(
+                    "<p></p>" +
+                            "<tr style=\"; background-color: #f9f9f9\">" +
+                            "<td style=\"padding: 8px;\n" +
+                            "  line-height: 1.42857143;\n" +
+                            "  vertical-align: top;\n" +
+                            "  border-top: 1px solid #ddd\">"+x+++" </td>" +
+                            "<td style=\"padding: 8px;\n" +
+                            "  line-height: 1.42857143;\n" +
+                            "  vertical-align: top;\n" +
+                            "  border-top: 1px solid #ddd\">"+log.getDescription()+"</td>" +
+                            "<td style=\"padding: 8px;\n" +
+                            "  line-height: 1.42857143;\n" +
+                            "  vertical-align: top;\n" +
+                            "  border-top: 1px solid #ddd\">"+log.getAction()+"</td>" +
+                            "<td style=\"padding: 8px;\n" +
+                            "  line-height: 1.42857143;\n" +
+                            "  vertical-align: top;\n" +
+                            "  border-top: 1px solid #ddd\">"+log.getStatus()+ " </td>" +
+                            "</tr>" );
+        }
+
+        String message = "<p align=\"center\" style=\"font-weight:bold\">Daily Reports</p>" +
+                "<p style=\"font-weight:bold\">Name: "+dto.getFullname()+"</p>" +
+                "<p style=\"font-weight:bold\">Department: "+dto.getDepartment()+"</p>" +
+                "<p style=\"font-weight:bold\">Date: "+dto.getDate()+"</p>" +
+                "<table style=\"width: 100%;\">"+
+                "<thead style=\"; background-color: #303f9f; color:#fff\">"+
+                "<tr >" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">S/N:</th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Description:</th>" +
+                "<th style=\"padding: 8px; text-align: left;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Action </th>" +
+                "<th style=\"padding: 8px;\n" +
+                "  line-height: 1.42857143;\n" +
+                "  vertical-align: top;\n" +
+                "  border-top: 1px solid #ddd\">Status</th>" +
+                "</tr><thead>"  +
+                strBuilder+
+                "</table>"+
+                "<p></p>" +
+                "<br /><p>Thank you </p>" +
+                "<p>Powergen Customer Experience Center</p>" +
+                "</div>";
+        return message;
+    }
+    public String newInventory(InventoryCreationDto dto){
+        StringBuilder strBuilder = new StringBuilder();
+        String message = "<p align=\"center\" style=\"font-weight:bold\">New Inventory Manager Created</p>" +
+                "<p style=\"font-weight:bold\">A new inventory manager has been created find details below</p>" +
+                "<p style=\"font-weight:bold\">Manager Name: "+dto.getInventoryManager()+"</p>" +
+                "<p style=\"font-weight:bold\">Inventory Type: "+dto.getInventoryType()+"</p>" +
+                "<p style=\"font-weight:bold\">Date: "+utils.getDate()+"</p>" +
+                "<p style=\"font-weight:bold\">Time: "+utils.getTime()+"</p>" +
+                "<p>If this was not authorized kindly take appropriate action. </p>" +
+                "<br /><p>Thanks </p>" +
+                "<p>Powergen Customer Experience Center</p>" +
+                "</div>";
+        return message;
+    }
+    public String addInventoryItem(InventoryItemDto dto){
+
+        StringBuilder strBuilder = new StringBuilder();
+        String message = "<p align=\"center\" style=\"font-weight:bold\">New Item Added to Inventory No: "+dto.getInventoryId()+"</p>" +
+                "<p style=\"font-weight:bold\">A new inventory item has been added to "+dto.getInventoryId()+"</p>" +
+                "<p style=\"font-weight:bold\">Manager Name: "+dto.getInventoryManager()+"</p>" +
+                "<p style=\"font-weight:bold\">Item Added: "+dto.getItemName()+"</p>" +
+                "<p style=\"font-weight:bold\">Quantity: "+dto.getItemQty()+"</p>" +
+                "<p style=\"font-weight:bold\">Units: "+dto.getItemUnits()+"</p>" +
+                "<p style=\"font-weight:bold\">Date: "+utils.getDate()+"</p>" +
+                "<p style=\"font-weight:bold\">Time: "+utils.getTime()+"</p>" +
+                "<p>If this was not authorized kindly take appropriate action. </p>" +
+                "<br /><p>Thanks </p>" +
+                "<p>Powergen Customer Experience Center</p>" +
+                "</div>";
+        return message;
+    }
+    public String vehicleReport(VehicleInspectionDto vehicleInspection){
+        List<String> vehicleContent = vehicleInspection.getVehicleContent();
+            String message = "<style>" +
+                    "</style>" +
+                    "Weekly/Monthly Vehicle Inspection Report <br>" +
+                    "<table style=\"width: 100%;\">"+
+                    "<thead style=\"; background-color: #303f9f; color:#fff\">"+
+                    "<tr >" +
+                    "<th style=\"padding: 8px; text-align: left;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Item:</th>" +
+                    "<th style=\"padding: 8px; text-align: left;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Details </th>" +
+                    "</tr><thead>"  +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Date:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + utils.getDate()+ " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Month:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" +vehicleContent.get(34)+ " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Week:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" +vehicleContent.get(35) + " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Inspecting Officer Name:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(7) + "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Current Millage:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(9)+ " </td>" +
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Engine Oil Level:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" +vehicleContent.get(10)+ " </td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Water Level</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(11) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Fuel Level</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(12) + " </td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Hydraulic Oil:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(13) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Transmission Oil:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(14)+ " </td>" +
+                    "</tr>" +
+                    "<tr></tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Tyre Condition:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(15)+ " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">All Guages:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(16) + " </td>" +
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Indicators</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(17) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Light And Signals:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(18) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Brakes Whilst Stationary:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(19) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Windshields</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(20) + " </td>" +
+
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Wiper</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(21)+ " </td>" +
+
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Battery Fluid Level</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(4) + " </td>" +
+
+                    "</tr>" +
+                    "<tr></tr>" +
+                    "<tr >" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Steam Washing</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(5) + " </td>" +
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Belts and Hose</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(2) + " </td>" +
+                    "</tr>" +
+
+
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Spanner:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(22) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Spare Tyre:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(23) + " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Umbrella:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(24) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Tool Box:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(25) + " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Fire Extinguisher:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(26) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">C-Caution:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" +vehicleContent.get(27) + " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Napkin:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(28) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Brush and Dust-Bin:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(29) + " </td>" +
+
+                    "</tr>" +
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Tissue:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(30) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Air Freshner:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(31) + " </td>" +
+
+                    "</tr>" +
+
+
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Overrall Vehicle Cleanliness:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(1) + " </td>" +
+
+                    "</tr>" +
+                    "<tr>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Drivers Concern:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" + vehicleContent.get(6) + " </td>" +
+
+                    "</tr>" +
+                    "<tr style=\"; background-color: #f9f9f9\">" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">Last Service:</td>" +
+                    "<td style=\"padding: 8px;\n" +
+                    "  line-height: 1.42857143;\n" +
+                    "  vertical-align: top;\n" +
+                    "  border-top: 1px solid #ddd\">" +vehicleContent.get(32) +  " </td>" +
+
+                    "</tr>" +
+                    "</table>" +
+
+                    "<p style=\"font-family: times, serif; font-size:10pt;\">Kind Regards</p>" +
+                    "<p  style=\"font-family: verdana; font-size:10pt;\">For Powergen Engineering Limited</p><br>" +
+                    "<p  style=\"font-family: 'Comic Sans MS'; font-size:12pt; color: Red;\">This report was generated runtime from the field</p>" +
+                    "<p  style=\"font-family: verdana; font-size:11pt;font-style:italic\">user details:</p>" +
+                    "<ul>" +
+                    "<li style=\"font-family: verdana; font-size:10pt;font-style:italic\">Submitted by: " +getUserDetails().getFirst_name()+" "+getUserDetails().getLast_name() +  "</li>" +
+                    "<li style=\"font-family: verdana; font-size:10pt;font-style:italic\">Role: " +getUserDetails().getRole() +"</li>" +
+                    "</ul>" +
+                    "<p  style=\"font-family: verdana; font-size:10pt;\">Website: Powergenltd.com</p>";
+
+            return message;
+
+    }
+    public UserDto getUserDetails(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getPrincipal().toString();
+        System.out.println(username);
+        UserEntity userId = userRepository.findByUsername(username);
+        UserDto userDto = new UserDto();
+        if (userId == null){
+            throw new UserServiceException("Action successful but could not send notification","could not get user details");
+        }
+        BeanUtils.copyProperties(userId, userDto);
+        return userDto;
     }
 }

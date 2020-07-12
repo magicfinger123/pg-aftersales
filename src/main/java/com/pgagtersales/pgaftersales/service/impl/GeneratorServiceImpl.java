@@ -1,25 +1,28 @@
 package com.pgagtersales.pgaftersales.service.impl;
 
 
+import com.pgagtersales.pgaftersales.controller.NotificationController;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.HttpResponses;
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.entity.ClientsEntity;
 import com.pgagtersales.pgaftersales.io.entity.GeneratorEntity;
+import com.pgagtersales.pgaftersales.io.entity.ReportLogEntity;
 import com.pgagtersales.pgaftersales.io.messages.NotificationMessages;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.ErrorMessage;
 import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.repository.ClientRepository;
 import com.pgagtersales.pgaftersales.repository.GeneratorRepository;
+import com.pgagtersales.pgaftersales.repository.ReportLogRepo;
 import com.pgagtersales.pgaftersales.service.GeneratorService;
-import com.pgagtersales.pgaftersales.shared.dto.ClientDto;
-import com.pgagtersales.pgaftersales.shared.dto.ClientDtoResponse;
-import com.pgagtersales.pgaftersales.shared.dto.GeneratorByClientIdDto;
-import com.pgagtersales.pgaftersales.shared.dto.GeneratorDto;
+import com.pgagtersales.pgaftersales.shared.AppConstants;
+import com.pgagtersales.pgaftersales.shared.Utils;
+import com.pgagtersales.pgaftersales.shared.dto.*;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +31,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -49,7 +55,18 @@ public class GeneratorServiceImpl implements GeneratorService {
     @Autowired
     NotificationMessages message;
 
-    String[] recipent = {"powergenltd@gmail.com","info@powergen@gmail.com"};
+
+
+    @Autowired
+    private NotificationController notificationController;
+
+    NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+
+    @Autowired
+    ReportLogRepo reportLogRepo;
+
+    @Autowired
+    private Utils utils;
 
     @Override
     public ApiResponse searchGenerators(String alias, int page, int size) {
@@ -198,6 +215,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     @SneakyThrows
     @Override
     public ApiResponse addGenerator(GeneratorDto generatorDto, Boolean sendNotification) {
+        String recipent = utils.getEmails("default").getEmailAddress();
         //GeneratorDto returnValue = new GeneratorDto();
         ModelMapper modelMapper = new ModelMapper();
         GeneratorEntity generatorEntity = generatorRepository.findByEngineSerial(generatorDto.getEngineSerial());
@@ -228,8 +246,26 @@ public class GeneratorServiceImpl implements GeneratorService {
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         if (sendNotification){
-            sendMail.sendEmailWithAttachment(message.addGenNotification(generatorDto),recipent,recipent, "GENERATOR SERVICE NOTIFICATION");
+           sendMail.sendEmailWithAttachment(message.addGenNotification(generatorDto),recipent, AppConstants.AFTERSALES_RECIPENTS, "GENERATOR COMMISSIONING NOTIFICATION");
         }
+        try {
+            ReportLogDto reportLogDto = new ReportLogDto();
+            reportLogDto.setUserId(message.getUserDetails().getUserId());
+            reportLogDto.setDescription("Commissioned generator at \n"+client.getCompany());
+            reportLogDto.setAction("Generator Commissioning");
+            reportLogDto.setStatus("completed");
+            reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+            reportLogDto.setTime(utils.getTime());
+            ReportLogEntity ent = new ReportLogEntity();
+            BeanUtils.copyProperties(reportLogDto,ent);
+            reportLogRepo.save(ent);
+        } catch (BeansException e) {
+            System.out.println("report log error"+e.getLocalizedMessage());
+        }
+        notificationRequestDto.setTarget("admin");
+        notificationRequestDto.setTitle("PEL");
+        notificationRequestDto.setBody("Gen Commissioning was done by "+message.getUserDetails().getFirst_name()+" on "+client.getCompany()+" Generators");
+        notificationController.sendPnsToTopic(notificationRequestDto);
         return apiResponse;
     }
     @Override

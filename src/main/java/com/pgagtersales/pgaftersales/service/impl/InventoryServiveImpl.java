@@ -6,6 +6,7 @@
 
 package com.pgagtersales.pgaftersales.service.impl;
 
+import com.pgagtersales.pgaftersales.controller.NotificationController;
 import com.pgagtersales.pgaftersales.exceptions.UserServiceException;
 import com.pgagtersales.pgaftersales.io.SendMail;
 import com.pgagtersales.pgaftersales.io.SuccessMessage;
@@ -18,6 +19,7 @@ import com.pgagtersales.pgaftersales.model.response.ResponseBuilder;
 import com.pgagtersales.pgaftersales.model.resquest.InventoryCreationDto;
 import com.pgagtersales.pgaftersales.repository.*;
 import com.pgagtersales.pgaftersales.service.InventoryService;
+import com.pgagtersales.pgaftersales.shared.AppConstants;
 import com.pgagtersales.pgaftersales.shared.Utils;
 import com.pgagtersales.pgaftersales.shared.dto.*;
 import lombok.SneakyThrows;
@@ -52,12 +54,16 @@ public class InventoryServiveImpl implements InventoryService {
     NotificationMessages message;
     @Autowired
     private UserRepository userRepository;
-
     String[] recipent = {"powergenltd@gmail.com"};
-    String[] ccRecipent = {"info@powergen@gmail.com"};
 
+
+    @Autowired
+    private NotificationController notificationController;
+
+    NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
     @Override
     public ApiResponse createInventory(InventoryCreationDto inventoryCreationDto) {
+        String ccRecipent = utils.getEmails("default").getEmailAddress();
         if (inventoryRepository.findByInventoryName(inventoryCreationDto.getInventoryName())!=null) {
             throw new UserServiceException("Inventory name already exist, use a different name","inventory name already exist");
         }
@@ -71,13 +77,24 @@ public class InventoryServiveImpl implements InventoryService {
         InventoryEntity entity = new InventoryEntity();
         BeanUtils.copyProperties(dto,entity);
         System.out.println("inventory Entity: "+entity);
-        try {
+
             InventoryEntity createInventory = inventoryRepository.save(entity);
-            ApiResponse apiResponse = utils.sucessApiResponse("Inventory created successfully");
-            return apiResponse;
-        } catch (Exception e) {
-            throw new UserServiceException("Unable to create Inventory","something went wrong: "+e.getLocalizedMessage());
+        try {
+            sendMail.sendEmailWithAttachment(message.newInventory(inventoryCreationDto), ccRecipent, AppConstants.AFTERSALES_RECIPENTS, "New Inventory Manager Created");
+        }catch (Exception e){
+
         }
+            ApiResponse apiResponse = utils.sucessApiResponse("Inventory created successfully");
+        try{
+            notificationRequestDto.setTarget("admin");
+            notificationRequestDto.setTitle("PEL");
+            notificationRequestDto.setBody("New Inventory Created by "+message.getUserDetails().getFirst_name()+" for "+inventoryCreationDto.getInventoryManager());
+            notificationController.sendPnsToTopic(notificationRequestDto);
+        } catch (Exception e) {
+            //throw new UserServiceException("Unable to create Inventory","something went wrong: "+e.getLocalizedMessage());
+        }
+            return apiResponse;
+
     }
 
     @Override
@@ -150,7 +167,7 @@ public class InventoryServiveImpl implements InventoryService {
             throw new UserServiceException("Inventory does not exist","Inventory does not exist");
         }
         if (teamRepository.findByTeamId(inventoryDto.getTeamId())==null) {
-            throw new UserServiceException("No team Selected","Innvalid team Id");
+            throw new UserServiceException("No team Selected","Invalid team Id");
         }
         //ScheduleDto dto = modelMapper.map(scheduleCreationDto, ScheduleDto.class);
         InventoryEntity entity = new InventoryEntity();
@@ -167,15 +184,19 @@ public class InventoryServiveImpl implements InventoryService {
 
     @Override
     public ApiResponse addItemToInventory(InventoryItemDto inventoryItemDto) {
-        if (inventoryRepository.findByInventoryId(inventoryItemDto.getInventoryId())==null) {
+        String ccRecipent = utils.getEmails("default").getEmailAddress();
+        InventoryEntity inv = inventoryRepository.findByInventoryId(inventoryItemDto.getInventoryId());
+        if (inv==null) {
             throw new UserServiceException("No inventory Selected","No inventory selected");
         }
+        inventoryItemDto.setInventoryManager(inv.getInventoryManager());
         inventoryItemDto.setInventoryItemId(utils.generateId(20));
         InventoryItemEntity entity = new InventoryItemEntity();
         BeanUtils.copyProperties(inventoryItemDto,entity);
         System.out.println("inventory Entity: "+entity);
         try {
             InventoryItemEntity createInventoryItem = inventoryItemRepository.save(entity);
+            sendMail.sendEmailWithAttachment(message.addInventoryItem(inventoryItemDto), ccRecipent, AppConstants.AFTERSALES_RECIPENTS, "Item Added to Inventory mannaged by "+inv.getInventoryManager());
             ApiResponse apiResponse = utils.sucessApiResponse("Inventory item created successfully");
             return apiResponse;
         } catch (Exception e) {
@@ -222,6 +243,7 @@ public class InventoryServiveImpl implements InventoryService {
     @SneakyThrows
     @Override
     public ApiResponse getItemsByInventoryIds(UpdateInventoryItemDto inventoryId) {
+        String ccRecipent = utils.getEmails("default").getEmailAddress();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getPrincipal().toString();
         System.out.println(username);
@@ -268,7 +290,7 @@ public class InventoryServiveImpl implements InventoryService {
             }
         }
 
-            sendMail.sendEmailWithAttachment(message.inventoryNotification(inventoryNotifications, userDto1), recipent, ccRecipent, userDto1.getUsername() + " Inventory Update");
+        sendMail.sendEmailWithAttachment(message.inventoryNotification(inventoryNotifications, userDto1), ccRecipent, AppConstants.AFTERSALES_RECIPENTS, userDto1.getUsername() + " Inventory Update");
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         SuccessMessage successMessage = SuccessMessage.builder().message("Update Successful").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);

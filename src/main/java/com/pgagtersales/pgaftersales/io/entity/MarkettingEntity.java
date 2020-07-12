@@ -40,7 +40,7 @@ public class MarkettingEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false, name = "ordertype")
+    @Column(nullable = false, name = "ordertype", length = 100)
     private String interest;
 
     @Column(nullable = false, name = "additionalInfo")

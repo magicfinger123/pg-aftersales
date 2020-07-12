@@ -2,6 +2,7 @@ package com.pgagtersales.pgaftersales.shared.dto;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.sql.Date;
 
 @Data
@@ -23,7 +24,11 @@ public class GeneratorDto {
     private String generator_type;
     private String contact_person;
     private String contact_person_phone;
+    private int maintenanceType;
+    private Date maintenanceStartDate;
+    private int serviceDone;
     private Date date;
+
     //private ClientDto clientDto;
 
 }

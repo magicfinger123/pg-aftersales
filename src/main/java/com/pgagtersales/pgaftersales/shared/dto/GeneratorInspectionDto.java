@@ -10,6 +10,8 @@ import lombok.Data;
 
 @Data
 public class GeneratorInspectionDto {
+    private String client_id;
+    private String client_email;
     private String gen_id;
     private String technician;
     private String hour_Reading;
