@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/vehicle")
 @RestController
 public class VehicleReportController {
-
         @Autowired
         private
         VehicleInspectionService vehicleInspectionService;

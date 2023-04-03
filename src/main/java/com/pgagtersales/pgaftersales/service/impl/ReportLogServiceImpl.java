@@ -75,6 +75,23 @@ public class ReportLogServiceImpl implements ReportLogService {
         return apiResponse;
     }
 
+
+    @Override
+    public ApiResponse getAllReports() {
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        Page<ReportLogEntity> reportPage = reportLogRepo.findAll(pageable);
+        List<ReportLogEntity> reports = reportPage.getContent();
+        List<ReportLogDto> reportLogDtos = new ArrayList<>();
+        for (ReportLogEntity log:reports) {
+            ReportLogDto logDto = new ReportLogDto();
+            BeanUtils.copyProperties(log,logDto);
+            reportLogDtos.add(logDto);
+        }
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(reportLogDtos);
+        return apiResponse;
+    }
+
     @Override
     public ApiResponse addLog(ReportLogDto reportLogDto) {
         ReportLogEntity reportLogEntity = new ReportLogEntity();
@@ -86,7 +103,7 @@ public class ReportLogServiceImpl implements ReportLogService {
            throw new UserServiceException("unable to save","unable to save log");
        }
         ApiResponse apiResponse = responseBuilder.successfulResponse();
-        SuccessMessage successMessage = SuccessMessage.builder().message("Payment notification sent successfully").build();
+        SuccessMessage successMessage = SuccessMessage.builder().message("Report logged successfully").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         return apiResponse;
     }

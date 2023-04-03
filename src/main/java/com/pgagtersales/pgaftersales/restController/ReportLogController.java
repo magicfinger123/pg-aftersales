@@ -31,16 +31,23 @@ public class ReportLogController {
     private LogTimeFilter logTimeFilter;
 
     @PostMapping()
-    public ResponseEntity<ApiResponse> updatePriceList(@RequestBody ReportLogDto reportLogDto)
+    public ResponseEntity<ApiResponse> addReportLog(@RequestBody ReportLogDto reportLogDto)
     {
         ApiResponse apiResponse = reportLogService.addLog(reportLogDto);//.updatePriceList(slaPriceListDto);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @GetMapping("/logbyuserbydate/{userid}/{date}")
-    public ResponseEntity<ApiResponse> getByUserByDate(@PathVariable String userid,@PathVariable String date, @RequestParam(value = "page",defaultValue = "0")int page,
+    public ResponseEntity<ApiResponse> getReportByUser(@PathVariable String userid,@PathVariable String date, @RequestParam(value = "page",defaultValue = "0")int page,
                                                        @RequestParam(value = "size",defaultValue = "25")int size)
     {
         ApiResponse apiResponse = reportLogService.getUserReportByDate(userid,date,page,size);//.updatePriceList(slaPriceListDto);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @GetMapping()
+    public ResponseEntity<ApiResponse> getAllReports(@RequestParam(value = "page",defaultValue = "0")int page,
+                                                       @RequestParam(value = "size",defaultValue = "25")int size)
+    {
+        ApiResponse apiResponse = reportLogService.getAllReports();//.updatePriceList(slaPriceListDto);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @PostMapping("/submit")

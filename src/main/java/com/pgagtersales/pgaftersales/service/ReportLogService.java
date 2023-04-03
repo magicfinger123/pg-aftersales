@@ -15,4 +15,5 @@ public interface ReportLogService {
     ApiResponse getUserReportByDate(String alias1, String alias2, int page, int size);
     ApiResponse addLog(ReportLogDto reportLogDto);
     ApiResponse submitReport(ReportSubmissionDto reportSubmissionDto);
+    ApiResponse getAllReports();
 }

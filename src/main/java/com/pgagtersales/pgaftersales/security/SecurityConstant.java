@@ -9,6 +9,7 @@ public class SecurityConstant {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL = "/user";
+    public static final String SWAGGER = "/swagger-ui.html";
     //public static final String TOKEN_SECRET = "uT_9uh0whr42o1hb";
 
     public static String getTokenSecret()
