@@ -8,6 +8,7 @@ package com.pgagtersales.pgaftersales.shared.dto;
 
 import lombok.Data;
 
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import java.sql.Date;
 
@@ -19,4 +20,6 @@ public class ReportLogDto {
     private Date date;
     private String status;
     private String time;
+    @Nullable
+    private String user;
 }

@@ -28,10 +28,16 @@ public class PaymentController {
     @Autowired
     private
     LogTimeFilter logTimeFilter;
-    @PostMapping("/general")
-    public ResponseEntity<ApiResponse> updatePriceList(@RequestBody PaymentAdviseDto paymentAdviseDto)
+    @PostMapping("/general/{}")
+    public ResponseEntity<ApiResponse> makePayment(@RequestBody PaymentAdviseDto paymentAdviseDto)
     {
         ApiResponse apiResponse = paymentService.makePayment(paymentAdviseDto);//.updatePriceList(slaPriceListDto);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PostMapping("/general/{id}")
+    public ResponseEntity<ApiResponse> getPayments(@PathVariable String id)
+    {
+        ApiResponse apiResponse = paymentService.getPaymentsByClients(id);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
 }

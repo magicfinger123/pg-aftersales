@@ -25,6 +25,5 @@ public class ClientDtoReq {
     private String cluster;
     private int visible;
     private String password;
-
     private List<GeneratorDto> generatorDtos;
 }

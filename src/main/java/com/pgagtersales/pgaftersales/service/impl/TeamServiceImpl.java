@@ -224,7 +224,7 @@ public class TeamServiceImpl implements TeamService {
         TeamDto returnValue = new TeamDto();
         TeamEntity teamEntity = teamRepository.findByTeamId(teamId);
         if (teamEntity == null) {
-            throw new UserServiceException("something went wrong","generator id not found");
+            throw new UserServiceException("something went wrong","team id not found");
         } else {
             BeanUtils.copyProperties(teamEntity, returnValue);
             ApiResponse apiResponse = responseBuilder.successfulResponse();

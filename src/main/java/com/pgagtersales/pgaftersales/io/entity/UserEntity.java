@@ -2,10 +2,7 @@ package com.pgagtersales.pgaftersales.io.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity(name = "user")
@@ -42,6 +39,17 @@ public class UserEntity implements Serializable {
 
     @Column(nullable = false, length = 50)
     private String role;
+
+    @Column(name = "image")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private String userPic;
+
+    @Column(nullable = true)
+    private double ratings;
+
+    @Column(nullable = true)
+    private int rating_count;
 
     @Column(nullable = false, name = "active")
     private Boolean activated = true;

@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2020. Magicfinger
+ * Email: mikeossaiofficial@gmail.com
+ * Tel: 07086737758
+ */
+
+package com.pgagtersales.pgaftersales.restController;
+
+import com.pgagtersales.pgaftersales.io.LogTimeFilter;
+import com.pgagtersales.pgaftersales.model.response.ApiResponse;
+import com.pgagtersales.pgaftersales.model.resquest.InventoryCreationDto;
+import com.pgagtersales.pgaftersales.service.InventoryService;
+import com.pgagtersales.pgaftersales.service.StoreInventoryService;
+import com.pgagtersales.pgaftersales.shared.dto.InventoryItemDto;
+import com.pgagtersales.pgaftersales.shared.dto.StoreInventoryDto;
+import com.pgagtersales.pgaftersales.shared.dto.StoreInventoryItemDto;
+import com.pgagtersales.pgaftersales.shared.dto.UpdateInventoryItemDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/store/inventory")
+public class StoreInventoryController {
+    @Autowired
+    private
+    StoreInventoryService inventoryService;
+    @Autowired
+    private
+    ApiResponse apiResponse;
+    @Autowired
+    private
+    LogTimeFilter logTimeFilter;
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse> createInventory(@RequestBody StoreInventoryDto inventoryCreationDto){
+        System.out.println("ScheduleCreation: "+ inventoryCreationDto+ " at InventoryController");
+        Long startTime = System.currentTimeMillis();
+        apiResponse = inventoryService.createInventory(inventoryCreationDto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @GetMapping()
+    public ResponseEntity<ApiResponse> getAllInventory(@RequestParam(value = "page",defaultValue = "0") int page,  @RequestParam(value = "size",defaultValue = "25") int size){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.getAllInventory(page,size);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+
+    @PostMapping("/item")
+    public ResponseEntity<ApiResponse> addItemToInventory(@RequestBody StoreInventoryItemDto inventoryItemDto){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.addItemToInventory(inventoryItemDto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PostMapping("/update/inventory_item")
+    public ResponseEntity<ApiResponse> updateInventoryDtos(@RequestBody UpdateInventoryItemDto inventoryItemDto){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.getItemsByInventoryIds(inventoryItemDto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PutMapping("/item")
+    public ResponseEntity<ApiResponse> updateInventoryItem(@RequestBody StoreInventoryItemDto inventoryItemDto){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.upDateInventoryItem(inventoryItemDto);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @GetMapping("/item")
+    public ResponseEntity<ApiResponse> getItemByInventoryId(@RequestParam("id") String inventoryId){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.getItemsByInventoryId(inventoryId);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @DeleteMapping("/item")
+    public ResponseEntity<ApiResponse> deleteItem(@RequestParam("id") String itemId){
+        Long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = inventoryService.deleteInventoryItem(itemId);
+        Long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+}

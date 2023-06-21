@@ -234,14 +234,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         if (savedClientEntity == null){
             throw new UserServiceException("unable to add generator","unable to add generator");
         }
-
-
-        //GeneratorEntity genEntity = new GeneratorEntity();
-        //BeanUtils.copyProperties(generatorDto, genEntity);
-        //ModelMapper modelMapper = new ModelMapper();
-       // ClientDto  returnValue =  modelMapper.map(savedClientEntity, ClientDto.class);
-       // GeneratorEntity saveUser = generatorRepository.save(genEntity);
-       // BeanUtils.copyProperties(saveUser, returnValue);
         ClientDto  returnValue =  modelMapper.map(savedClientEntity, ClientDto.class);
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
@@ -282,6 +274,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             return apiResponse;
         } else {
             BeanUtils.copyProperties(generatorDto, generatorEntity);
+            generatorEntity.setId(id);
             GeneratorEntity saveUser = generatorRepository.save(generatorEntity);
             BeanUtils.copyProperties(saveUser, returnValue);
             ApiResponse apiResponse = responseBuilder.successfulResponse();

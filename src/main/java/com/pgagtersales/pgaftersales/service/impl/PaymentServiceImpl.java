@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (client == null){
             throw new UserServiceException("client does not exist in the database","client does not exist in the database");
         }
-        String new_recipennt = client.getEmail();
+        String new_recipent = client.getEmail();
         returnValue.setClientName(client.getFirst_name());
         if (client.getOutstandingDtos()!=null) {
             int totalOut = 0;
@@ -75,12 +75,6 @@ public class PaymentServiceImpl implements PaymentService {
               totalOut = totalOut+x;
             }
             returnValue.setCurrentOutstandingOwed(totalOut);
-            //returnValue.setOutStandingDescription(outstanding.getDescription());
-           // OutstandingEntity outstanding = outstandingRepository.findByClientId(paymentAdviseDto.getClientId());
-           /* if (outstanding != null) {
-                returnValue.setCurrentOutstandingOwed(Integer.parseInt(outstanding.getInvoicedAmount()) - Integer.parseInt(outstanding.getAmountPaid()));
-                returnValue.setOutStandingDescription(outstanding.getDescription());
-            }*/
         }
         if (paymentAdviseDto.getGeneratorMaintenance()){
            returnValue.setSlaType(paymentAdviseDto.getSlaType());
@@ -93,7 +87,7 @@ public class PaymentServiceImpl implements PaymentService {
             returnValue.setSlaType(null);
             returnValue.setPaymentDescription(paymentAdviseDto.getPaymentDescription());
         }
-        sendMail.sendEmailWithAttachment(message.paymentAdviseNotification(returnValue),new_recipennt, AppConstants.FINANCE_AND_AFTERSALES, "PAYMENT ADVICE");
+        sendMail.sendEmailWithAttachment(message.paymentAdviseNotification(returnValue),new_recipent, AppConstants.FINANCE_AND_AFTERSALES, "PAYMENT ADVICE");
         try {
             ReportLogDto reportLogDto = new ReportLogDto();
             reportLogDto.setUserId(message.getUserDetails().getUserId());
@@ -112,5 +106,10 @@ public class PaymentServiceImpl implements PaymentService {
         SuccessMessage successMessage = SuccessMessage.builder().message("Payment notification sent successfully").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);
         return apiResponse;
+    }
+
+    @Override
+    public ApiResponse getPaymentsByClients(String clientId) {
+        return null;
     }
 }

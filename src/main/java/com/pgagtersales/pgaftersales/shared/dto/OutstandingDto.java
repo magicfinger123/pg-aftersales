@@ -20,6 +20,7 @@ public class OutstandingDto {
     private String amountPaid;
     private String user;
     private String lastFDate;
+    private String balance;
     private String nextFDate;
     private String date;
     private int visible;

@@ -2,6 +2,9 @@ package com.pgagtersales.pgaftersales.shared.dto;
 
 import lombok.Data;
 
+import javax.annotation.Nullable;
+
+
 @Data
 public class UserDto {
     public static final long serialVersionUID = 7168715137979527464L;
@@ -15,4 +18,10 @@ public class UserDto {
     private String encryptedPassword;
     private String role;
     private Boolean activated;
+    @Nullable
+    private String userPic;
+    @Nullable
+    private double ratings;
+    @Nullable
+    private int rating_count;
 }

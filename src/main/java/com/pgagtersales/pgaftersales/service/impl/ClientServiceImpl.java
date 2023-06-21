@@ -105,6 +105,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ApiResponse getClientById(int clientId) {
         ClientsEntity clientsEntity = clientRepository.findById(clientId);
+       // ModelMapper modelMapper = new ModelMapper();
         if (clientsEntity == null) {
             ApiResponse failedResponse = responseBuilder.failedResponse(HttpResponses.HTTP_STATUS_BAD_REQUEST);
             ErrorMessage errorMessage = ErrorMessage.builder()
@@ -115,14 +116,18 @@ public class ClientServiceImpl implements ClientService {
             return failedResponse;
 
         } else {
-            ClientDto clientDto = new ClientDto();
-            BeanUtils.copyProperties(clientsEntity, clientDto);
+         //   ClientDto clientDto = new ClientDto();
+
+           // BeanUtils.copyProperties(clientsEntity, clientDto);
             List<OutstandingDto> outstandingDtos = new ArrayList<>();
+            ModelMapper modelMapper = new ModelMapper();
+            ClientDto clientDto = modelMapper.map(clientsEntity, ClientDto.class);
             for (OutstandingEntity out:clientsEntity.getOutstandingDtos()) {
                 OutstandingDto dto = new OutstandingDto();
                 BeanUtils.copyProperties(out, dto);
                 dto.setClientName(clientsEntity.getFirst_name());
                 dto.setCompanyName(clientsEntity.getCompany());
+                dto.setBalance(String.valueOf((Double.parseDouble(dto.getInvoicedAmount()) - Double.parseDouble(dto.getAmountPaid()))));
                 outstandingDtos.add(dto);
             }
             clientDto.setOutstandingDtos(outstandingDtos);

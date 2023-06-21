@@ -48,10 +48,8 @@ public class ReportLogServiceImpl implements ReportLogService {
     private SendMail sendMail;
     @Autowired
     private NotificationMessages message;
-
     @Autowired
     private Utils utils;
-
 
     String[] ccrecipent = {"powergenltd@gmail.com"};
 
@@ -63,7 +61,6 @@ public class ReportLogServiceImpl implements ReportLogService {
             throw new UserServiceException("no report found","no report found");
         }*/
         List<ReportLogEntity> reports = reportPage.getContent();
-
         List<ReportLogDto> reportLogDtos = new ArrayList<>();
         for (ReportLogEntity log:reports) {
             ReportLogDto logDto = new ReportLogDto();
@@ -85,6 +82,8 @@ public class ReportLogServiceImpl implements ReportLogService {
         for (ReportLogEntity log:reports) {
             ReportLogDto logDto = new ReportLogDto();
             BeanUtils.copyProperties(log,logDto);
+            UserEntity user = userRepository.findByUserId(log.getUserId());
+            logDto.setUser(user.getFirst_name()+" "+user.getLast_name());
             reportLogDtos.add(logDto);
         }
         ApiResponse apiResponse = responseBuilder.successfulResponse();
@@ -99,13 +98,11 @@ public class ReportLogServiceImpl implements ReportLogService {
            throw new UserServiceException("user not found","user with id "+reportLogDto.getUserId()+" not found");
        }
        BeanUtils.copyProperties(reportLogDto,reportLogEntity);
-       if(reportLogRepo.save(reportLogEntity)==null){
-           throw new UserServiceException("unable to save","unable to save log");
-       }
-        ApiResponse apiResponse = responseBuilder.successfulResponse();
-        SuccessMessage successMessage = SuccessMessage.builder().message("Report logged successfully").build();
-        apiResponse.responseEntity = ResponseEntity.ok(successMessage);
-        return apiResponse;
+       reportLogRepo.save(reportLogEntity);
+       ApiResponse apiResponse = responseBuilder.successfulResponse();
+       SuccessMessage successMessage = SuccessMessage.builder().message("Report logged successfully").build();
+       apiResponse.responseEntity = ResponseEntity.ok(successMessage);
+       return apiResponse;
     }
 
     @Override
@@ -119,9 +116,7 @@ public class ReportLogServiceImpl implements ReportLogService {
         reportSubmissionDto.setFullname(user.getFirst_name()+" "+user.getLast_name());
         try {
             sendMail.sendEmailWithAttachment(message.reportsSubmit(reportSubmissionDto),recipent, AppConstants.HR_RECIPENTS, "Staff Daily Report");
-        } catch (MessagingException e) {
-            throw new UserServiceException("unable to send report","something went wrong "+e);
-        } catch (IOException e) {
+        } catch (MessagingException | IOException e) {
             throw new UserServiceException("unable to send report","something went wrong "+e);
         }
         ApiResponse apiResponse = responseBuilder.successfulResponse();

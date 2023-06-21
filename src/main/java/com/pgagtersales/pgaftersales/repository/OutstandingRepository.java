@@ -17,4 +17,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OutstandingRepository extends PagingAndSortingRepository<OutstandingEntity,Integer> {
     //OutstandingEntity findByClientId(String clientId);
+    OutstandingEntity findById(int clientId);
 }

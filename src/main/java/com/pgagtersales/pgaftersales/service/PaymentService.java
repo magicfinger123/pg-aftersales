@@ -11,4 +11,5 @@ import com.pgagtersales.pgaftersales.shared.dto.PaymentAdviseDto;
 
 public interface PaymentService {
     ApiResponse makePayment(PaymentAdviseDto paymentAdviseDto);
+    ApiResponse getPaymentsByClients(String clientId);
 }

@@ -2298,6 +2298,23 @@ public class NotificationMessages {
                 "</div>";
         return message;
     }
+    public String addStoreInventoryItem(StoreInventoryItemDto dto){
+
+        StringBuilder strBuilder = new StringBuilder();
+        String message = "<p align=\"center\" style=\"font-weight:bold\">New Item Added to Inventory No: "+dto.getInventoryId()+"</p>" +
+                "<p style=\"font-weight:bold\">A new inventory item has been added to "+dto.getInventoryId()+"</p>" +
+                "<p style=\"font-weight:bold\">Manager Name: "+dto.getInventoryManager()+"</p>" +
+                "<p style=\"font-weight:bold\">Item Added: "+dto.getItemName()+"</p>" +
+                "<p style=\"font-weight:bold\">Quantity: "+dto.getItemQty()+"</p>" +
+                "<p style=\"font-weight:bold\">Units: "+dto.getItemUnits()+"</p>" +
+                "<p style=\"font-weight:bold\">Date: "+utils.getDate()+"</p>" +
+                "<p style=\"font-weight:bold\">Time: "+utils.getTime()+"</p>" +
+                "<p>If this was not authorized kindly take appropriate action. </p>" +
+                "<br /><p>Thanks </p>" +
+                "<p>Powergen Customer Experience Center</p>" +
+                "</div>";
+        return message;
+    }
     public String vehicleReport(VehicleInspectionDto vehicleInspection){
         List<String> vehicleContent = vehicleInspection.getVehicleContent();
             String message = "<style>" +

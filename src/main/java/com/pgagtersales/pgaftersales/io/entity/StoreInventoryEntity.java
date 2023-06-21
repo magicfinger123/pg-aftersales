@@ -10,11 +10,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-@Entity(name = "inventory")
+@Entity(name = "store_inventory")
 @Data
-public class InventoryEntity {
-
-    public static final long serialVersionUID = 2828520025360413233L;
+public class StoreInventoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,15 +25,17 @@ public class InventoryEntity {
     @Column(nullable = false, name = "inventory_type")
     private String inventoryType;
 
-    @Column(name = "schedule_id")
-    private String scheduleId;
-
-    @Column(name = "team_id")
-    private String teamId;
-
     @Column(name = "inventory_name", unique = true)
     private String inventoryName;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "inventory_manager")
     private String inventoryManager;
+
+    @Column(name = "last_update_user")
+    private String updatedBy;
+
+
 }

@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public ApiResponse createUser(UserDto userDto) {
         UserDto returnValue = new UserDto();
         if (userRepository.findByUsername(userDto.getUsername())!=null) {
             throw new UserServiceException("user already exist","user already exist");
@@ -55,7 +55,9 @@ public class UserServiceImpl implements UserService {
         userEntity.setRole(userDto.getRole().toLowerCase());
         UserEntity saveUser = userRepository.save(userEntity);
         BeanUtils.copyProperties(saveUser, returnValue);
-        return returnValue;
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(returnValue);
+        return apiResponse;
     }
 
     @Override

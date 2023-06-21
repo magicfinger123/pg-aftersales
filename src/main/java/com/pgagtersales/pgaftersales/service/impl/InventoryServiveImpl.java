@@ -38,22 +38,31 @@ import java.util.List;
 
 @Service
 public class InventoryServiveImpl implements InventoryService {
+
     @Autowired
     InventoryRepository inventoryRepository;
+
     @Autowired
     InventoryItemRepository inventoryItemRepository;
+
     @Autowired
     TeamRepository teamRepository;
+
     @Autowired
     ResponseBuilder responseBuilder;
+
     @Autowired
     private Utils utils;
+
     @Autowired
     SendMail sendMail;
+
     @Autowired
     NotificationMessages message;
+
     @Autowired
     private UserRepository userRepository;
+
     String[] recipent = {"powergenltd@gmail.com"};
 
 
@@ -61,6 +70,7 @@ public class InventoryServiveImpl implements InventoryService {
     private NotificationController notificationController;
 
     NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+
     @Override
     public ApiResponse createInventory(InventoryCreationDto inventoryCreationDto) {
         String ccRecipent = utils.getEmails("default").getEmailAddress();
@@ -77,11 +87,10 @@ public class InventoryServiveImpl implements InventoryService {
         InventoryEntity entity = new InventoryEntity();
         BeanUtils.copyProperties(dto,entity);
         System.out.println("inventory Entity: "+entity);
-
-            InventoryEntity createInventory = inventoryRepository.save(entity);
+        InventoryEntity createInventory = inventoryRepository.save(entity);
         try {
             sendMail.sendEmailWithAttachment(message.newInventory(inventoryCreationDto), ccRecipent, AppConstants.AFTERSALES_RECIPENTS, "New Inventory Manager Created");
-        }catch (Exception e){
+        } catch (Exception e){
 
         }
             ApiResponse apiResponse = utils.sucessApiResponse("Inventory created successfully");
@@ -91,10 +100,9 @@ public class InventoryServiveImpl implements InventoryService {
             notificationRequestDto.setBody("New Inventory Created by "+message.getUserDetails().getFirst_name()+" for "+inventoryCreationDto.getInventoryManager());
             notificationController.sendPnsToTopic(notificationRequestDto);
         } catch (Exception e) {
-            //throw new UserServiceException("Unable to create Inventory","something went wrong: "+e.getLocalizedMessage());
-        }
-            return apiResponse;
 
+        }
+          return apiResponse;
     }
 
     @Override
@@ -136,7 +144,6 @@ public class InventoryServiveImpl implements InventoryService {
             throw new UserServiceException("Unable to get schedule","something went wrong: "+e.getLocalizedMessage());
         }
     }
-
     @Override
     public ApiResponse getInventoryByScheduleId(String scheduleId) {
         return getApiResponse(scheduleId);
@@ -187,7 +194,7 @@ public class InventoryServiveImpl implements InventoryService {
         String ccRecipent = utils.getEmails("default").getEmailAddress();
         InventoryEntity inv = inventoryRepository.findByInventoryId(inventoryItemDto.getInventoryId());
         if (inv==null) {
-            throw new UserServiceException("No inventory Selected","No inventory selected");
+            throw new UserServiceException("No inventory selected","No inventory selected");
         }
         inventoryItemDto.setInventoryManager(inv.getInventoryManager());
         inventoryItemDto.setInventoryItemId(utils.generateId(20));
@@ -224,6 +231,7 @@ public class InventoryServiveImpl implements InventoryService {
             throw new UserServiceException("Unable update item","something went wrong: "+e.getLocalizedMessage());
         }
     }
+
     @Override
     public ApiResponse deleteInventoryItem(String inventoryItemId) {
         InventoryItemEntity getItemEntity = inventoryItemRepository.findByInventoryItemId(inventoryItemId);
@@ -290,7 +298,8 @@ public class InventoryServiveImpl implements InventoryService {
             }
         }
 
-        sendMail.sendEmailWithAttachment(message.inventoryNotification(inventoryNotifications, userDto1), ccRecipent, AppConstants.AFTERSALES_RECIPENTS, userDto1.getUsername() + " Inventory Update");
+        sendMail.sendEmailWithAttachment(message.inventoryNotification(inventoryNotifications, userDto1), ccRecipent,
+                AppConstants.AFTERSALES_RECIPENTS, userDto1.getUsername() + " Inventory Update");
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         SuccessMessage successMessage = SuccessMessage.builder().message("Update Successful").build();
         apiResponse.responseEntity = ResponseEntity.ok(successMessage);

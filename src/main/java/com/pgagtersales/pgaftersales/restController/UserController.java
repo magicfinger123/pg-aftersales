@@ -29,16 +29,15 @@ public class UserController {
     ApiResponse apiResponse;
 
     @PostMapping()
-    public UserRest signUpUsers(@RequestBody UserSignUpRequest userSignUpRequest)
+    public  ResponseEntity<ApiResponse> signUpUsers(@RequestBody UserSignUpRequest userSignUpRequest)
     {
         UserRest returnValue = new UserRest();
         BeanUtils.copyProperties(userSignUpRequest, returnValue);
         UserServiceImpl userService1 = new UserServiceImpl();
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userSignUpRequest,userDto);
-        UserDto userDto1 = userService.createUser(userDto);
-        BeanUtils.copyProperties(userDto1, returnValue);
-        return returnValue;
+        apiResponse  = userService.createUser(userDto);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @PostMapping("/changePassword")
     public ResponseEntity<ApiResponse> changePasswprd(@RequestBody ChangePasswordDto dto)
@@ -55,7 +54,7 @@ public class UserController {
         return null;
     }
     @GetMapping()
-    public ResponseEntity<ApiResponse> getUserAllUser()
+    public ResponseEntity<ApiResponse> getAllUser()
     {
         Long startTime = System.currentTimeMillis();
         apiResponse = userService.getAllUsers();
