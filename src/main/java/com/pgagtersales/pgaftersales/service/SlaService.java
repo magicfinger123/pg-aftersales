@@ -18,4 +18,6 @@ public interface SlaService {
     ApiResponse updateGenService(SlaEntity slaEntity);
     ApiResponse notifyCustomer(SlaRequestDto slaRequestDto);
     ApiResponse updatePriceList(SlaPriceListDto slaPriceListDto);
+
+    public ApiResponse getAllSla(int page, int size);
 }

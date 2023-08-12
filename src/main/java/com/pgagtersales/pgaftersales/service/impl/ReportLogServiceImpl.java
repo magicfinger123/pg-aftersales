@@ -92,6 +92,23 @@ public class ReportLogServiceImpl implements ReportLogService {
     }
 
     @Override
+    public ApiResponse getReportByUser(String userID, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReportLogEntity> reportPage = reportLogRepo.findByUserId(userID, pageable);
+        List<ReportLogEntity> reports = reportPage.getContent();
+        List<ReportLogDto> reportLogDtos = new ArrayList<>();
+        for (ReportLogEntity log:reports) {
+            ReportLogDto logDto = new ReportLogDto();
+            BeanUtils.copyProperties(log,logDto);
+            UserEntity user = userRepository.findByUserId(log.getUserId());
+            logDto.setUser(user.getFirst_name()+" "+user.getLast_name());
+            reportLogDtos.add(logDto);
+        }
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(reportLogDtos);
+        return apiResponse;
+    }
+    @Override
     public ApiResponse addLog(ReportLogDto reportLogDto) {
         ReportLogEntity reportLogEntity = new ReportLogEntity();
        if( userRepository.findByUserId(reportLogDto.getUserId())== null){
@@ -104,7 +121,6 @@ public class ReportLogServiceImpl implements ReportLogService {
        apiResponse.responseEntity = ResponseEntity.ok(successMessage);
        return apiResponse;
     }
-
     @Override
     public ApiResponse submitReport(ReportSubmissionDto reportSubmissionDto) {
         String recipent = utils.getEmails("default").getEmailAddress();

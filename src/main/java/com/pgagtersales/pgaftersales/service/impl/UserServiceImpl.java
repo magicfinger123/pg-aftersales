@@ -12,6 +12,8 @@ import com.pgagtersales.pgaftersales.shared.dto.ChangePasswordDto;
 import com.pgagtersales.pgaftersales.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,14 +43,13 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
+
 
     @Override
     public ApiResponse createUser(UserDto userDto) {
         UserDto returnValue = new UserDto();
-        if (userRepository.findByUsername(userDto.getUsername())!=null) {
-            throw new UserServiceException("user already exist","user already exist");
-        }
+
         userDto.setUserId(utils.generateId(20));
         userDto.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()).toString());
         userDto.setActivated(true);
@@ -77,6 +80,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(userEntity, returnValue);
         returnValue.setPassword("");
         returnValue.setEncryptedPassword("");
+        returnValue.setUserPic("");
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         return apiResponse;

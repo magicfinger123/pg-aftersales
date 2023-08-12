@@ -56,4 +56,12 @@ public class ReportLogController {
         ApiResponse apiResponse = reportLogService.submitReport(dto);//.updatePriceList(slaPriceListDto);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
+    @GetMapping("/logbyuser")
+    public ResponseEntity<ApiResponse> getReportByUserOnly(@RequestParam(value = "userId",defaultValue = "0")String userid,
+                                                           @RequestParam(value = "page",defaultValue = "0")int page,
+                                                           @RequestParam(value = "size",defaultValue = "25")int size)
+    {
+        ApiResponse apiResponse = reportLogService.getReportByUser(userid, page, size);//.updatePriceList(slaPriceListDto);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
 }

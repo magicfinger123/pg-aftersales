@@ -28,7 +28,7 @@ public class PaymentController {
     @Autowired
     private
     LogTimeFilter logTimeFilter;
-    @PostMapping("/general/{}")
+    @PostMapping("/general")
     public ResponseEntity<ApiResponse> makePayment(@RequestBody PaymentAdviseDto paymentAdviseDto)
     {
         ApiResponse apiResponse = paymentService.makePayment(paymentAdviseDto);//.updatePriceList(slaPriceListDto);

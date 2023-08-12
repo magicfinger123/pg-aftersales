@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @PostMapping("/changePassword")
-    public ResponseEntity<ApiResponse> changePasswprd(@RequestBody ChangePasswordDto dto)
+    public ResponseEntity<ApiResponse> changePassword(@RequestBody ChangePasswordDto dto)
     {
         Long startTime = System.currentTimeMillis();
         apiResponse = userService.changeUserPassword(dto);
@@ -64,11 +64,18 @@ public class UserController {
     }
     @GetMapping("/Checklogin")
     public ResponseEntity<ApiResponse> getByUserId(@RequestParam("userId") String userId){
-        Long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         ApiResponse apiResponse = userService.getUserbyUserId(userId);
-        Long duration = System.currentTimeMillis()-startTime;
-        apiResponse.executionTime = Double.valueOf(duration)/100;
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
-
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse> getUserByUserId(@PathVariable String userId){
+        long startTime = System.currentTimeMillis();
+        ApiResponse apiResponse = userService.getUserbyUserId(userId);
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
 }

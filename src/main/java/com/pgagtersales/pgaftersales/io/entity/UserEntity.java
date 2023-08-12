@@ -1,5 +1,7 @@
 package com.pgagtersales.pgaftersales.io.entity;
 
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -53,4 +55,6 @@ public class UserEntity implements Serializable {
 
     @Column(nullable = false, name = "active")
     private Boolean activated = true;
+
+   // Storage storage = StorageOptions.getDefaultInstance().getService();
 }

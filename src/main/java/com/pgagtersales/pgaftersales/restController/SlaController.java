@@ -55,4 +55,10 @@ public class SlaController
         ApiResponse apiResponse = slaService.updatePriceList(slaPriceListDto);
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
+    @GetMapping("/priceList")
+    public ResponseEntity<ApiResponse> getPriceList()
+    {
+        ApiResponse apiResponse = slaService.getAllSla(0,30);
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
 }

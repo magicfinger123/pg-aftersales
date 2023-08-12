@@ -27,11 +27,16 @@ import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SlaServiceImpl implements SlaService {
@@ -159,10 +164,60 @@ public class SlaServiceImpl implements SlaService {
     @Override
     public ApiResponse updatePriceList(SlaPriceListDto slaPriceListDto) {
         SlaPriceListEntity slaPriceListEntity = new SlaPriceListEntity();
-        BeanUtils.copyProperties(slaPriceListDto, slaPriceListEntity);
-        SlaPriceListEntity priceList = slaPriceListRepository.save(slaPriceListEntity);
+        SlaPriceListEntity priceList;
+        SlaPriceListEntity existing = slaPriceListRepository.findByRating(slaPriceListDto.getRating());
+        if (existing != null){
+            BeanUtils.copyProperties(slaPriceListDto,existing);
+             priceList = slaPriceListRepository.save(existing);
+            try {
+                ReportLogDto reportLogDto = new ReportLogDto();
+                reportLogDto.setUserId(message.getUserDetails().getUserId());
+                reportLogDto.setDescription("Updated Sla maintenance price for "+slaPriceListDto.getRating()+ "Generator");
+                reportLogDto.setAction("Updated maintenance contract price");
+                reportLogDto.setStatus("completed");
+                reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+                reportLogDto.setTime(utils.getTime());
+                ReportLogEntity ent = new ReportLogEntity();
+                BeanUtils.copyProperties(reportLogDto,ent);
+                reportLogRepo.save(ent);
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
+        }else{
+            BeanUtils.copyProperties(slaPriceListDto, slaPriceListEntity);
+             priceList = slaPriceListRepository.save(slaPriceListEntity);
+            try {
+                ReportLogDto reportLogDto = new ReportLogDto();
+                reportLogDto.setUserId(message.getUserDetails().getUserId());
+                reportLogDto.setDescription("Added Sla maintenance price for "+slaPriceListDto.getRating()+ "Generator");
+                reportLogDto.setAction("Added maintenance contract price");
+                reportLogDto.setStatus("completed");
+                reportLogDto.setDate(java.sql.Date.valueOf(utils.getDate()));
+                reportLogDto.setTime(utils.getTime());
+                ReportLogEntity ent = new ReportLogEntity();
+                BeanUtils.copyProperties(reportLogDto,ent);
+                reportLogRepo.save(ent);
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
+        }
         SlaPriceListDto returnValue = new SlaPriceListDto();
         BeanUtils.copyProperties(priceList,returnValue);
+        ApiResponse apiResponse = responseBuilder.successfulResponse();
+        apiResponse.responseEntity = ResponseEntity.ok(returnValue);
+        return apiResponse;
+    }
+    @Override
+    public ApiResponse getAllSla(int page, int size) {
+        List<SlaPriceListDto> returnValue = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SlaPriceListEntity> slaEntities = slaPriceListRepository.findAll(pageable);
+        List<SlaPriceListEntity> slaContent = slaEntities.getContent();
+        for (SlaPriceListEntity ent : slaContent) {
+            SlaPriceListDto dto = new SlaPriceListDto();
+            BeanUtils.copyProperties(ent, dto);
+            returnValue.add(dto);
+        }
         ApiResponse apiResponse = responseBuilder.successfulResponse();
         apiResponse.responseEntity = ResponseEntity.ok(returnValue);
         return apiResponse;

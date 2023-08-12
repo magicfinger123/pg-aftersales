@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sound-works-387423",
+  "private_key_id": "8796a3f37ccb188932b2c7c9c0d21d8803ee6233",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCr4Qyc7BWGtdPu\nG0bBHZjxdrCvI/x7Y+skafdV2eYjnvNmMPAjrWAnYQzle2AObrhucTpav4eTPYEn\npz92p9qRcvOUIVrJvmYyNgv6XS1EDXp6deDsIUvnNIpU1TsJXLAb9G4O6Kw1uuAo\nBnqvDODp3n9qha67O+CH1MIKAe8cvG6HMNPfUh5YBp4Gm772ZYuzGBXc1hsLW175\ne07ezR9zUfzoIgnzEZSWWFQeJfA9YDIOF4eScZE6O0mq+/hFHtTHqEYIs1op+e5R\n0elz8f1cmu8YvNGvX1xtDLO3oWgzteVIyEi2o3E00E4N+A1mRCJK0/3GwQbd98X+\nfsupnLtFAgMBAAECggEABt4nMt38E4s7EfiPtd0I5Me+p5Y4hcr9n6bcSyyPFZKf\nByZNch+AsrzIrHgRjoITZyupuUE4mZmLikS/NG6LPTnqobCeKrwrjotk+cwJ/ajM\nNrh0aaWq8sIWr5fAPs+FT0NPt9N0OMa5eN/0EaqMvMuMgSUg+4+Y7n8sga8yGWPH\n/6Bu1PQh/9yfVFnhQY4I67MdNMpDStvVbedgvBJjWJ4IegYI29Ep7WEa2SNPvJOm\nzOOjVfU4V2YTYhU9V2xYMkVRhgW5fUxDw1NWEYBBQZjbbiTy/63MDvsbo1pJKajl\niEnsd+ncNePP8kZM9xY3qIlTwcrKoU+x/KNhHb+YwQKBgQDav8IYb6E3M7bKekKf\nUzfHdJu+rVg5DLQ/cRz+6N4V/0Y+XgW/6spwFEm3u7B+ouDBUMju6PElSkSwyzcN\nXRniAmkj3YJa1vcpvWtLc9vBEx9fp/69uyOvRKhyGnbXxOHZkRdEUJdD5S0ng7r9\n3TFg95d+E5GWDoglirocFK0gEwKBgQDJJgWQJ/iyF2l0CiT1VITbRrGxp7kNSlbN\nPqTVGRUnqRehE2FaA6X+luByMaDk1ysq0i9Kjx4Lz8rKISRjJq5vhFEC0djuWC77\nXXuY1cIF4cf5HlOailBtV6iP+N9N1NGEkB6QeLhaLLPJI2+1l1xko/RjgDtCybvy\nqwgp/zqSRwKBgGK8PRKkiEMPX4lC6AFcIYgwtP+65GBTwKQGHU1dtKh/IaiS7ctz\nYc53CdMZr49pW0NGgHt9vyLSw/B8uSuaA03FQsnCeM0hzEwVyHE1KVKbnASkIlJn\nPrMkrVdbZJr9redzGupl6fDmZ5w3VFaz2U7oUoPAt2zgwEkZtelo17/rAoGAG1Zy\njRwRncq2x1GVok4hXFfoUJfV+6ttzqlD575n9KLzli23Hm++gLJqwLpj/pYLxN8a\nFE0NLVfJXN1SP7ODI57dD8ALdqE/iWQ0JxpuKzR7ZC0t+aPwuFugiiit2Lsi2pxn\nuwTdMUxABwcs6IYwxXDPBzLnWvVl+N4r1uFcSYMCgYBh1GwAfMoMi1Ifvk46Wn2Y\nfpwrwVa1Blmo1gqOk7o0uvK02UaUf93bP5cQ5jCk37kqiY3NdwC3LrMBegtWog80\nBeUQwNkUlHxpRDd5G+hxIjxy2g3cyOMENTBwKeVONkzKIiSzuMRJ21187FLDLoeL\nbvyG14BcVF/Jz9WeHjDSSA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "magicfinger@sound-works-387423.iam.gserviceaccount.com",
+  "client_id": "102544358343604181448",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/magicfinger%40sound-works-387423.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

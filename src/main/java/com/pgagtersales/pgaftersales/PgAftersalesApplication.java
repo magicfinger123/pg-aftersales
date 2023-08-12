@@ -25,13 +25,13 @@ import java.io.IOException;
 public class PgAftersalesApplication extends SpringBootServletInitializer {
 
 	//::this should be removed to run on local
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		//return super.configure(builder);
 		return builder.sources(PgAftersalesApplication.class);
 	}
 	//
-
 	public static void main(String[] args) {
 		SpringApplication.run(PgAftersalesApplication.class, args);
 	}
@@ -40,19 +40,21 @@ public class PgAftersalesApplication extends SpringBootServletInitializer {
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
+
 	@Bean
 	public SpringApplicationContext springApplicationContext(){
 		return new SpringApplicationContext();
 	}
+
 	@Bean(name = "ApplicationProperties")
 	public ApplicationProperties getApplicationProperties(){
 		return new ApplicationProperties();
 	}
+
 	@Bean
 	public Docket productApi() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
 				.apis(RequestHandlerSelectors.basePackage("com.pgagtersales.pgaftersales")).build();
 	}
-
 
 }
