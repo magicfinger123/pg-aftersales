@@ -63,7 +63,7 @@ public class InventoryServiveImpl implements InventoryService {
     @Autowired
     private UserRepository userRepository;
 
-    String[] recipent = {"powergenltd@gmail.com"};
+
 
 
     @Autowired

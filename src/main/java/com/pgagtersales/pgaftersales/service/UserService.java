@@ -8,9 +8,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
+
     ApiResponse createUser(UserDto userDto);
     UserDto getUser(String username);
     ApiResponse getUserbyUserId(String userId);
     ApiResponse getAllUsers();
     ApiResponse changeUserPassword(ChangePasswordDto dto);
+    ApiResponse updateUser(UserDto dto);
+
+    ApiResponse deleteUser(UserDto dto);
 }

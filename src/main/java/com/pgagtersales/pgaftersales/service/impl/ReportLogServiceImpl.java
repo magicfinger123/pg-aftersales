@@ -51,7 +51,7 @@ public class ReportLogServiceImpl implements ReportLogService {
     @Autowired
     private Utils utils;
 
-    String[] ccrecipent = {"powergenltd@gmail.com"};
+
 
     @Override
     public ApiResponse getUserReportByDate(String alias1, String alias2, int page, int size) {

@@ -4,6 +4,7 @@ package com.pgagtersales.pgaftersales.restController;
 import com.pgagtersales.pgaftersales.model.response.ApiResponse;
 import com.pgagtersales.pgaftersales.model.response.UserRest;
 import com.pgagtersales.pgaftersales.model.resquest.UserSignUpRequest;
+import com.pgagtersales.pgaftersales.service.StorageService;
 import com.pgagtersales.pgaftersales.service.UserService;
 import com.pgagtersales.pgaftersales.service.impl.UserServiceImpl;
 import com.pgagtersales.pgaftersales.shared.dto.ChangePasswordDto;
@@ -23,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    StorageService storageService;
 
     @Autowired
     private
@@ -46,6 +50,25 @@ public class UserController {
         apiResponse = userService.changeUserPassword(dto);
         Long duration = System.currentTimeMillis()-startTime;
         apiResponse.executionTime = Double.valueOf(duration)/100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+    @PutMapping()
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody UserDto dto)
+    {
+        long startTime = System.currentTimeMillis();
+        apiResponse = userService.updateUser(dto);
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
+        return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
+    }
+
+    @PutMapping("/delete")
+    public ResponseEntity<ApiResponse> deleteUser(@RequestBody UserDto dto)
+    {
+        long startTime = System.currentTimeMillis();
+        apiResponse = userService.deleteUser(dto);
+        long duration = System.currentTimeMillis()-startTime;
+        apiResponse.executionTime = (double) duration /100;
         return ResponseEntity.status(apiResponse.getStatusCode()).body(apiResponse);
     }
     @GetMapping("/{username}")

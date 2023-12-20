@@ -69,6 +69,7 @@ public class Utils {
         if (emailRecipentEntity == null){
             emailsDto.setType("");
             emailsDto.setEmailAddress("powergencustomercare@gmail.com, powergenltd@gmail.com");
+          //  emailsDto.setEmailAddress("ossaimike8@gmail.com");
         }else {
             BeanUtils.copyProperties(emailRecipentEntity, emailsDto);
         }

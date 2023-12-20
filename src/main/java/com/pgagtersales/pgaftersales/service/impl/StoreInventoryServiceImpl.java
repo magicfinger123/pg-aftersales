@@ -52,7 +52,6 @@ public class StoreInventoryServiceImpl implements StoreInventoryService {
     @Autowired
     private UserRepository userRepository;
 
-    String[] recipent = {"powergenltd@gmail.com"};
 
 
     @Autowired

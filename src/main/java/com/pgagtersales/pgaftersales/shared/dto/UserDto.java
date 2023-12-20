@@ -24,4 +24,6 @@ public class UserDto {
     private double ratings;
     @Nullable
     private int rating_count;
+    @Nullable
+    private String fileExt;
 }

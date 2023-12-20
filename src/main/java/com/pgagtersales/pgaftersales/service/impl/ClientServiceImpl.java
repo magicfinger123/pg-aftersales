@@ -147,8 +147,12 @@ public class ClientServiceImpl implements ClientService {
         }
        // ClientsEntity clientsEntity = new ClientsEntity();
        // BeanUtils.copyProperties(clientDto, clientsEntity);
+
         ModelMapper modelMapper = new ModelMapper();
         ClientsEntity clientsEntity = modelMapper.map(clientDto, ClientsEntity.class);
+        if (clientDto.getEmail() == null ){
+            clientsEntity.setEmail("powergencustomercare@gmail.com");
+        }
         ClientsEntity saveUser = clientRepository.save(clientsEntity);
        // BeanUtils.copyProperties(saveUser, returnValue);
         ClientDto returnValue  = modelMapper.map(saveUser, ClientDto.class);

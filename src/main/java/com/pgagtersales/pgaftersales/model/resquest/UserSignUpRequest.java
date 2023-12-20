@@ -19,5 +19,7 @@ public class UserSignUpRequest {
     private double ratings = 5;
     @Nullable
     private int rating_count = 1;
+    @Nullable
+    private String fileExt;
 
 }

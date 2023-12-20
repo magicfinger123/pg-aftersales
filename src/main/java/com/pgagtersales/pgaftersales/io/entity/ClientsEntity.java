@@ -27,9 +27,9 @@ public class ClientsEntity {
     private String last_name;
     @Column(nullable = false, length = 50)
     private String title;
-    @Column(nullable = false, length = 50)
+    @Column()
     private String phone;
-    @Column(nullable = false)
+    @Column()
     private String email;
     @Column(nullable = false, name = "company_name")
     private String company;

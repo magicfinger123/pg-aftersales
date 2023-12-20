@@ -63,7 +63,7 @@ public class SlaServiceImpl implements SlaService {
     @Autowired
     private Utils utils;
 
-    String[] recipent = {"powergenltd@gmail.com"};
+
     @Override
     public ApiResponse updateGenService(SlaEntity slaEntity) {
         if (slaEntity==null){
